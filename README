@@ -1,0 +1,48 @@
+README
+
+This code will clean the MCVL files and will arrange them into a panel like the LFS.
+If you don't want a panel, for now I will recommend you to use the last year of your sample.
+
+In order to work, you will have to fill in the folders in rawfiles with the decompressed
+afiliation, pension, and personal information files. The codes work with their original names
+except for 2009-2013 where you need to make the .TXT at the end of the file .txt (lowercase)
+
+Then the order of the files should be:
+
+1. format_all_personal.do  -> This will create a personal .dta file in each year
+2. format_all_pension.do   -> This will create a pension .dta file in each year
+
+3. format_all.do           -> This will create an afiliation .dta file in each year
+
+4. Patchwork.do            -> This will join the afiliation files and perform extra corrections
+
+5. format_all_fiscal.do    -> This will create a wages/income .dta file in each year
+6. panel_fiscal.do         -> This will merge all wage files and arrange them into a panel
+
+7. merge_fiscal.do         -> This will merge the afiliation panel/file with the wage panel
+
+Notes:
+* If you want a year in particular (say 2013), you can select it in the format_all files.
+* Inside Patchwork.do you can choose with unemployment expansion to implement.
+  Simply comment and uncomment the required line of code.
+* Patchwork can work as a way to format only one year instead of multiple years.
+  Simply uncomment the option that doesn't have a _panel bit in the industry
+  and contract modification adjustment (cma) lines.
+* I have a very crude way to export the flows into text files. Feel free to write something more sophisticated.
+* The quartely_panel and monthly_panel .do files create a labour force state "0" when
+  the unemployed is not registered. This happens if the ltu or the stu corrections are implemented.
+  If you would prefer to keep all unemployed as "U", modify the state variable to reflect it.
+* Using the information on the fiscal file guide, you can investigate different types of income,
+  such as royalties, severance payments and more. Edit format_all_wages.do for this.
+* If you are willing to sacrifice accuracy for covering more spells, you can use the contributions
+  files to get information on the base wages of workers. I do not have the code for this.
+
+If you have any questions, fell free to email me.
+
+Please do not distribute this code without permission.
+
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+Cristina Lafuente - 17/06/2018 - Cristina.Lafuente@ed.ac.uk
+
+
+
