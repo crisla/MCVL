@@ -1,5 +1,5 @@
-
-quietly do "./format_all_personal.do"
+* If you have not done so, format all personal now (uncomment)
+// quietly do "./format_all_personal.do"
 
 * 2005 * * * * * * * * * * * * * * * * * * * * * * * * * * 
 clear 

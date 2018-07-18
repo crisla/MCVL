@@ -4,10 +4,20 @@ This code will clean the MCVL files and will arrange them into a panel like the 
 If you don't want a panel, for now I will recommend you to use the last year of your sample.
 
 In order to work, you will have to fill in the folders in rawfiles with the decompressed
-afiliation, pension, and personal information files. The codes work with their original names
-except for 2009-2013 where you need to make the .TXT at the end of the file .txt (lowercase)
+afiliation, pension, and personal information files. The codes work with most of their original names
+except for 2009-2013 where you need to make the .TXT at the end of the file .txt (lowercase).
 
-Then the order of the files should be:
+The other naming issues are: 
+
+- The Social Security staff puts the information in .TRS files, not .txt files. 
+  This is fixed by substituting the ending of the files from .TRS to .txt
+
+- Some naming conventions of the files may change. 
+  If this causes problems, change the file names in the .do files to reflect the names of your files.
+
+Once the naming issues have been dealt with, you can execute the code. 
+
+The order of the files should be:
 
 1. format_all_personal.do  -> This will create a personal .dta file in each year
 2. format_all_pension.do   -> This will create a pension .dta file in each year
