@@ -4,8 +4,7 @@ This code will clean the MCVL files and will arrange them into a panel like the 
 If you don't want a panel, for now I will recommend you to use the last year of your sample.
 
 In order to work, you will have to fill in the folders in rawfiles with the decompressed
-afiliation, pension, and personal information files. The codes work with most of their original names
-except for 2009-2013 where you need to make the .TXT at the end of the file .txt (lowercase).
+afiliation, pension, and personal information files. The codes work with most of their original names except for 2009-2013 where you need to make the .TXT at the end of the file .txt (lowercase).
 
 The other naming issues are: 
 
