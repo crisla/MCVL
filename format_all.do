@@ -167,8 +167,6 @@ merge m:1 id using "./rawfiles/2011/personal11.dta"
 drop if _merge==2
 drop _merge
 
-saveold "./rawfiles/afilianon2010.dta", version (13) replace
-
 saveold "./rawfiles/afilianon2011.dta", version (13) replace
 
 * 2012 * * * * * * * * * * * * * * * * * * * * * * * * * * 
@@ -192,8 +190,6 @@ do "./rawfiles/format_afilianon.do"
 merge m:1 id using "./rawfiles/2012/personal12.dta"
 drop if _merge==2
 drop _merge
-
-saveold "./rawfiles/afilianon2010.dta", version (13) replace
 
 saveold "./rawfiles/afilianon2013.dta", version (13) replace
 

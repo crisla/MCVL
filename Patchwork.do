@@ -225,7 +225,7 @@ quietly do  "./coru_stu.do" // Same as ltu, plus all gaps between employment<15 
 drop if dtout<td(01jan2003)
 
 * If you don't wnat to panelize the data (as in the LFS) you can stop here
-// saveold "./MCVL0313.dta", replace version(12)
+saveold "./MCVL0313.dta", replace version(12)
 
 * 4 Making into a Panel
 ******************************************************************************
