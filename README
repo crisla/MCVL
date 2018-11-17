@@ -4,40 +4,33 @@ This code will clean the MCVL files and will arrange them into a panel like the 
 If you don't want a panel, for now I will recommend you to use the last year of your sample.
 
 In order to work, you will have to fill in the folders in rawfiles with the decompressed
-afiliation, pension, and personal information files. The codes work with most of their original names except for 2009-2013 where you need to make the .TXT at the end of the file .txt (lowercase).
+afiliation, pension, and personal information files. The codes work with their original names
+except for 2009-2013 where you need to make the .TXT at the end of the file .txt (lowercase)
 
-The other naming issues are: 
-
-- The Social Security staff puts the information in .TRS files, not .txt files. 
-  This is fixed by substituting the ending of the files from .TRS to .txt
-
-- Some naming conventions of the files may change. 
-  If this causes problems, change the file names in the .do files to reflect the names of your files.
-
-Once the naming issues have been dealt with, you can execute the code. 
-
-The order of the files should be:
+Then the order of the files should be:
 
 1. format_all_personal.do  -> This will create a personal .dta file in each year
 2. format_all_pension.do   -> This will create a pension .dta file in each year
 
 3. format_all.do           -> This will create an afiliation .dta file in each year
 
-4. Patchwork.do            -> This will join the afiliation files and perform extra corrections
+4a. Patchwork_panel.do            -> This will join the afiliation files and perform extra corrections (panel version)
+4a. Patchwork_retro.do            -> This will use ONE afiliation file and perform extra corrections (retrospective version)
 
 5. format_all_fiscal.do    -> This will create a wages/income .dta file in each year
 6. panel_fiscal.do         -> This will merge all wage files and arrange them into a panel
 
-7. merge_fiscal.do         -> This will merge the afiliation panel/file with the wage panel
+7a. merge_fiscal_panel.do         -> This will merge the afiliation panel file with the wage panel
+7a. merge_fiscal_retro.do         -> This will merge the afiliation retrospective panel with the wage panel
 
 Notes:
 * If you want a year in particular (say 2013), you can select it in the format_all files.
-* Inside Patchwork.do you can choose with unemployment expansion to implement.
+* Inside Patchwork_panel.do and Patchwork_retro.do you can choose with unemployment expansion to implement. 
   Simply comment and uncomment the required line of code.
 * Patchwork can work as a way to format only one year instead of multiple years.
   Simply uncomment the option that doesn't have a _panel bit in the industry
   and contract modification adjustment (cma) lines.
-* I have a very crude way to export the flows into text files. Feel free to write something more sophisticated.
+* I have a very crude way to export the flows into text files. Feel free to write something more elegant.
 * The quartely_panel and monthly_panel .do files create a labour force state "0" when
   the unemployed is not registered. This happens if the ltu or the stu corrections are implemented.
   If you would prefer to keep all unemployed as "U", modify the state variable to reflect it.
@@ -51,7 +44,7 @@ If you have any questions, fell free to email me.
 Please do not distribute this code without permission.
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-Cristina Lafuente - 17/06/2018 - Cristina.Lafuente@ed.ac.uk
+Cristina Lafuente - 17/11/2018 - Cristina.Lafuente@ed.ac.uk
 
 
 

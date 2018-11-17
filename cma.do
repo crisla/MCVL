@@ -36,12 +36,50 @@ format mod2dt %td
 gen statch1 = ""
 replace statch1 = "T" if mod1ty> 400 & mod1ty < 900
 replace statch1 = "P" if mod1ty>0 & mod1ty < 400
+* Other, older temporary contracts:
+replace statch1 = "T" if tyco>=4&tyco<8
+replace statch1 = "T" if tyco>=14&tyco<18
+replace statch1 = "T" if tyco==22|(tyco>=24&tyco<28)
+replace statch1 = "T" if tyco>=34&tyco<39
+replace statch1 = "T" if tyco>=53&tyco<59
+replace statch1 = "T" if tyco==64|(tyco>=66&tyco<69)
+replace statch1 = "T" if tyco>=72&tyco<100
+* Other, older permanet contracts:
+replace statch1 = "P" if tyco==18
+replace statch1 = "P" if tyco>0&tyco<4
+replace statch1 = "P" if tyco>10&tyco<14
+replace statch1 = "P" if tyco==20|tyco==23
+replace statch1 = "P" if tyco>=28&tyco<34
+replace statch1 = "P" if tyco>=39&tyco<53
+replace statch1 = "P" if tyco>=59&tyco<64
+replace statch1 = "P" if tyco==65
+replace statch1 = "P" if tyco>=69&tyco<72
+
 gen splitt = 1 if statch1!=""&state!=statch1
 * Generate split2 variable if there was an effective change in labour contract 
 * on the 2nd modification
 gen statch2 = ""
 replace statch2 = "T" if mod2ty> 400 & mod2ty < 900
 replace statch2 = "P" if mod2ty>0 & mod2ty < 400
+* Other, older temporary contracts:
+replace statch2 = "T" if tyco>=4&tyco<8
+replace statch2 = "T" if tyco>=14&tyco<18
+replace statch2 = "T" if tyco==22|(tyco>=24&tyco<28)
+replace statch2 = "T" if tyco>=34&tyco<39
+replace statch2 = "T" if tyco>=53&tyco<59
+replace statch2 = "T" if tyco==64|(tyco>=66&tyco<69)
+replace statch2 = "T" if tyco>=72&tyco<100
+* Other, older permanet contracts:
+replace statch2 = "P" if tyco==18
+replace statch2 = "P" if tyco>0&tyco<4
+replace statch2 = "P" if tyco>10&tyco<14
+replace statch2 = "P" if tyco==20|tyco==23
+replace statch2 = "P" if tyco>=28&tyco<34
+replace statch2 = "P" if tyco>=39&tyco<53
+replace statch2 = "P" if tyco>=59&tyco<64
+replace statch2 = "P" if tyco==65
+replace statch2 = "P" if tyco>=69&tyco<72
+
 gen split2 = 1 if statch2!=""&state!=statch2
 * If the actual change came in the 2nd modification, do not count the first
 replace splitt=. if statch1==statch2
