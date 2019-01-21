@@ -36,6 +36,7 @@ by id year: replace M`i' = 1 if dtin<=dtinM`i'&dtout>dtoutM`i'
 }
 *
 
+
 * Cleaning
 drop dtinM* dtoutM*
 
@@ -74,7 +75,7 @@ drop M* mth_ext
 *** U0s **************************************************************
 
 gen ext_m = mofd(ext_dt)
-replace state="0" if ext_m<time&state=="U"
+replace state="0" if ext_m<time
 
 by id: gen flow = state+state[_n+1] if time+1==time[_n+1]
 

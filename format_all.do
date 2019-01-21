@@ -16,7 +16,7 @@ use "./rawfiles/2005/afilianon051.dta"
 append using "./rawfiles/2005/afilianon052.dta"
 append using "./rawfiles/2005/afilianon053.dta"
 
-do "./format_afilianon.do"
+do "./rawfiles/format_afilianon.do"
 
 * Add personal file
 merge m:1 id using "./rawfiles/2005/personal05.dta"
@@ -40,7 +40,7 @@ use "./rawfiles/2006/afilianon061.dta"
 append using "./rawfiles/2006/afilianon062.dta"
 append using "./rawfiles/2006/afilianon063.dta"
 
-do "./format_afilianon.do"
+do "./rawfiles/format_afilianon.do"
 
 * Add personal file
 merge m:1 id using "./rawfiles/2006/personal06.dta"
@@ -64,7 +64,7 @@ use "./rawfiles/2007/afilianon071.dta"
 append using "./rawfiles/2007/afilianon072.dta"
 append using "./rawfiles/2007/afilianon073.dta"
 
-do "./format_afilianon.do"
+do "./rawfiles/format_afilianon.do"
 
 * Add personal file
 merge m:1 id using "./rawfiles/2007/personal07.dta"
@@ -88,7 +88,7 @@ use "./rawfiles/2008/afilianon081.dta"
 append using "./rawfiles/2008/afilianon082.dta"
 append using "./rawfiles/2008/afilianon083.dta"
 
-do "./format_afilianon.do"
+do "./rawfiles/format_afilianon.do"
 
 * Add personal file
 merge m:1 id using "./rawfiles/2008/personal08.dta"
@@ -112,7 +112,7 @@ use "./rawfiles/2009/afilianon091.dta"
 append using "./rawfiles/2009/afilianon092.dta"
 append using "./rawfiles/2009/afilianon093.dta"
 
-do "./format_afilianon.do"
+do "./rawfiles/format_afilianon.do"
 
 * Add personal file
 merge m:1 id using "./rawfiles/2009/personal09.dta"
@@ -136,7 +136,7 @@ use "./rawfiles/2010/afilianon101.dta"
 append using "./rawfiles/2010/afilianon102.dta"
 append using "./rawfiles/2010/afilianon103.dta"
 
-do "./format_afilianon.do"
+do "./rawfiles/format_afilianon.do"
 
 * Add personal file
 merge m:1 id using "./rawfiles/2010/personal10.dta"
@@ -151,16 +151,16 @@ insheet using "./rawfiles/2011/MCVL2011AFILIAD1_CDF.txt", delimiter(";")
 save "./rawfiles/2011/afilianon111.dta", replace
 clear
 insheet using "./rawfiles/2011/MCVL2011AFILIAD2_CDF.txt", delimiter(";")
-save "./rawfiles/2011/afilianon112.dta", replace
+save "./rawfiles/2011/afilianon113.dta", replace
 clear
 insheet using "./rawfiles/2011/MCVL2011AFILIAD3_CDF.txt", delimiter(";")
 save "./rawfiles/2011/afilianon113.dta", replace
 clear
 use "./rawfiles/2011/afilianon111.dta"
-append using "./rawfiles/2011/afilianon112.dta"
+append using "./rawfiles/2011/afilianon113.dta"
 append using "./rawfiles/2011/afilianon113.dta"
 
-do "./format_afilianon.do"
+do "./rawfiles/format_afilianon.do"
 
 * Add personal file
 merge m:1 id using "./rawfiles/2011/personal11.dta"
@@ -184,7 +184,7 @@ use "./rawfiles/2012/afilianon121.dta"
 append using "./rawfiles/2012/afilianon122.dta"
 append using "./rawfiles/2012/afilianon123.dta"
 
-do "./format_afilianon.do"
+do "./rawfiles/format_afilianon.do"
 
 * Add personal file
 merge m:1 id using "./rawfiles/2012/personal12.dta"
@@ -212,7 +212,7 @@ append using "./rawfiles/2013/afilianon132.dta"
 append using "./rawfiles/2013/afilianon133.dta"
 append using "./rawfiles/2013/afilianon134.dta"
 
-do "./format_afilianon.do"
+do "./rawfiles/format_afilianon.do"
 
 * Add personal file
 merge m:1 id using "./rawfiles/2013/personal13.dta"

@@ -1,50 +1,77 @@
 README
 
-This code will clean the MCVL files and will arrange them into a panel like the LFS.
-If you don't want a panel, for now I will recommend you to use the last year of your sample.
+This code will clean the MCVL-CDF afiliation files (2004-2013), joining the different affiliation
+files into a single panel. It also links them with personal and pension files.
+An extension of the code cleans the fiscal (tax) file and joins it with the master afilaition file.
+
+At the same time, some code offers the posibility of building a quarterly/monthly panel as in the LFS.
+Details about this and the code in the robustness folder can be found in Lafuente(2019).
+
+* There will be a new version, where the MCVL is used restrospectively, soon *
 
 In order to work, you will have to fill in the folders in rawfiles with the decompressed
 afiliation, pension, and personal information files. The codes work with their original names
 except for 2009-2013 where you need to make the .TXT at the end of the file .txt (lowercase)
 
-Then the order of the files should be:
+The code comes in 2 flavours, depending on your purposes. The order of the files should be:
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+FLAVOUR A. You want to link to wage data / not interested in building a panel as in the LFS
 
 1. format_all_personal.do  -> This will create a personal .dta file in each year
 2. format_all_pension.do   -> This will create a pension .dta file in each year
 
 3. format_all.do           -> This will create an afiliation .dta file in each year
 
-4a. Patchwork_panel.do            -> This will join the afiliation files and perform extra corrections (panel version)
-4a. Patchwork_retro.do            -> This will use ONE afiliation file and perform extra corrections (retrospective version)
+4. Patchwork.do            -> This will join the afiliation files and perform extra corrections
 
 5. format_all_fiscal.do    -> This will create a wages/income .dta file in each year
 6. panel_fiscal.do         -> This will merge all wage files and arrange them into a panel
 
-7a. merge_fiscal_panel.do         -> This will merge the afiliation panel file with the wage panel
-7a. merge_fiscal_retro.do         -> This will merge the afiliation retrospective panel with the wage panel
+7. merge_fiscal.do         -> This will merge the afiliation panel/file with the wage panel
 
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+
+FLAVOUR B. You want to buil as in the LFS. This replicates the results of Lafuente(2019)
+
+1. format_all_personal.do  -> This will create a personal .dta file in each year
+2. format_all_pension.do   -> This will create a pension .dta file in each year
+
+3. format_all.do           -> This will create an afiliation .dta file in each year
+
+4. Patchwork_prelim.do     -> This will join the afiliation files and perform extra corrections
+
+5. Patchwork_stu.do /      |
+   Patchwork_ltu.do /      |-> Choose your unemployment correction. It will export a series of 
+   Patchwork_none.do       |   quarterly stocks and flows like in the LFS in .log files
+
+- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+ 
 Notes:
 * If you want a year in particular (say 2013), you can select it in the format_all files.
-* Inside Patchwork_panel.do and Patchwork_retro.do you can choose with unemployment expansion to implement. 
+* Inside Patchwork.do you can choose with unemployment expansion to implement.
   Simply comment and uncomment the required line of code.
-* Patchwork can work as a way to format only one year instead of multiple years.
-  Simply uncomment the option that doesn't have a _panel bit in the industry
-  and contract modification adjustment (cma) lines.
-* I have a very crude way to export the flows into text files. Feel free to write something more elegant.
+* The contract modification adjustment (cma) and expansion files will work with the panel version.
+  If you want to use one year in particular, the code to do so will be available soon.
+* I export labour market flows and stocks as .log files. Feel free to write something more sophisticated.
 * The quartely_panel and monthly_panel .do files create a labour force state "0" when
   the unemployed is not registered. This happens if the ltu or the stu corrections are implemented.
   If you would prefer to keep all unemployed as "U", modify the state variable to reflect it.
 * Using the information on the fiscal file guide, you can investigate different types of income,
   such as royalties, severance payments and more. Edit format_all_wages.do for this.
-* If you are willing to sacrifice accuracy for covering more spells, you can use the contributions
+* If you are willing to sacrifice accuracy for covering more spells, you can use the contribution
   files to get information on the base wages of workers. I do not have the code for this.
+* The robusness folder cotains code to perform robustness checks to the unemployment expansions,
+  as explained in Lafuente(2019). I have not tested this code in the GitHub version, so there
+  might be errors if you try to fun the files. Executing Patchwork_prelim.do is necessary.
 
-If you have any questions, fell free to email me.
+If you have any questions, comment on GitHub! Also feel free to email me.
 
 Please do not distribute this code without permission.
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-Cristina Lafuente - 17/11/2018 - Cristina.Lafuente@ed.ac.uk
+Cristina Lafuente - 21/01/2019 - Cristina.Lafuente@ed.ac.uk
 
 
 

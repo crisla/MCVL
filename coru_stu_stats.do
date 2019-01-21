@@ -103,6 +103,7 @@ by id: replace cdtout  = cdtin[_n+1] if state[_n]=="U"&state[_n+1]!="U"&state[_n
 by id: replace mod_u  = 1           if state[_n]=="U"&dtout<td(31dec2013)&last_spell==1&regular_dismissal==1&year(cdtout)>2003
 by id: replace cdtout=td(31dec2013) if state[_n]=="U"&dtout<td(31dec2013)&last_spell==1&regular_dismissal==1&year(cdtout)>2003
 
+replace days_c = cdtout-cdtin if mod_u==1
 * * * * * * * * * * * *  EXPANDING UNEMPLOYMENT (2) * * * * * * * * * * * *  
 
 sort id year jobcount dtin dtout
@@ -197,6 +198,10 @@ replace mod_u = 2 if hidden_u==1
 gen type_u = "quit" if quit==1
 replace type_u = "short emp" if short_emp==1
 replace type_u = "self emp" if self_emp==1
+
+log using stu_type.log,replace
+tab type_u if mod_u == 2
+log close
 // tab type_u if hidden_u==1
 //
 //      type_u |      Freq.     Percent        Cum.
@@ -207,6 +212,10 @@ replace type_u = "self emp" if self_emp==1
 // ------------+-----------------------------------
 //       Total |    794,705      100.00
 
+log using duration_stats.log,replace
+sum days_c if mod_u==1&days_c>0&dtout>=td(01jan2005),d
+sum days_c if mod_u==2&dtout>=td(01jan2005),d
+log close
 // . sum days_c if hidden_u==1,d
 // . sum days_c if mod_u==1&days_c>0&dtout>=td(01jan2005),d
 //
@@ -224,6 +233,11 @@ replace type_u = "self emp" if self_emp==1
 // 90%          992           3286       Variance       208700.2
 // 95%         1460           3286       Skewness       2.525348
 // 99%         2191           3286       Kurtosis       10.78857
+
+log using age_stats.log,replace
+sum age if mod_u==2,d
+sum age if mod_u==1,d
+log close
 
 //
 // . sum days_c if hidden_u==1&dtout>=td(01jan2005),d
@@ -243,18 +257,22 @@ replace type_u = "self emp" if self_emp==1
 // 95%          823           3174       Skewness       3.059732
 // 99%         1432           3226       Kurtosis       15.89696
 replace state1 = ""
-by id: replace state1 = state[_n-1] if jobcount!=jobcount[_n-1]|mod_u==2
+by id: replace state1 = state[_n-1] if (jobcount!=jobcount[_n-1]&state!=state[_n-1])|mod_u==2
 by id: replace state1 = state1[_n-1] if state1==""
-
-gen state_1 = ""
-by id: replace state_1 = state[_n+1] if jobcount!=jobcount[_n+1]
+//
+replace state_1 = ""
+by id: replace state_1 = state[_n+1] if (jobcount!=jobcount[_n+1]&state!=state[_n+1])|mod_u==2
 by id: replace state_1 = state1[_n+1] if state_1==""
 
 // by id year: replace state1 = state[_n-1] 
 // by id: replace state1 = state[_n-1] if state1==""
-// by id year : gen state_1 = state[_n+1]
+// by id year : replace state_1 = state[_n+1]
 // by id: replace state_1 = state[_n+1] if state_1==""
-// . tab state1 if hidden_u==1
+
+log using state_expansion.log,replace
+tab state1 if hidden_u==1
+tab state1 if mod_u==1
+log close
 //
 //      state1 |      Freq.     Percent        Cum.
 // ------------+-----------------------------------
@@ -278,7 +296,7 @@ by id: replace state_1 = state1[_n+1] if state_1==""
 // ------------+-----------------------------------
 //       Total |    459,894      100.00
 
-// export delimited id state year mod_u cdtin cdtout dtin dtout cop age sex cause type_u state1 ExpP ExpT ExpU NoU NoT NoP state_1 if state=="U"&days_c>0&dtout>=td(01jan2005)&jobcount!=jobcount[_n+1] using "/home/clafuente/New/gaps_stats.csv", replace
+export delimited id state year mod_u cdtin cdtout dtin dtout days_c cop age sex cause type_u state1 state_1 ExpP ExpT ExpU NoU NoT NoP if state=="U"&days_c>0&dtout>=td(01jan2005)&jobcount!=jobcount[_n+1] using "gaps_stats_new.csv", replace
 
 * * * * * * * * * * * *   FIXING SPELLS OVER THE YEAR * * * * * * * * * * * *  
 sort id year jobcount cdtin cdtout 
