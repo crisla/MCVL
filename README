@@ -1,5 +1,8 @@
 README
 
+** Please see the Instructions.pdf file with information on how to obtain the data and more detailed
+explanations of what the code does **
+
 This code will clean the MCVL-CDF afiliation files (2004-2013), joining the different affiliation
 files into a single panel. It also links them with personal and pension files.
 An extension of the code cleans the fiscal (tax) file and joins it with the master afilaition file.
