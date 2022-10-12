@@ -1,54 +1,21 @@
+* FORMAT PENSION FILES * * * * * * * * * * * * * * * * * * * * * * * * * * 
 
-* 2005 * * * * * * * * * * * * * * * * * * * * * * * * * * 
-clear
-insheet using "./rawfiles/2005/PREANON.txt", delimiter(";")
-do "./rawfiles/pension_format.do"
-saveold "./rawfiles/2005/pension2005.dta", v(12) replace
+* Old style: 2005-2008
+forvalues yy=2006/2008 {
+	local y =  substr("`yy'",3,4)
+	clear
+	insheet using "./rawfiles/`yy'/PREANON.trs", delimiter(";")
+	do "./rawfiles/pension_format.do"
+	save "./rawfiles/`yy'/pension`y'.dta", replace
+}
 
-* 2006 * * * * * * * * * * * * * * * * * * * * * * * * * * 
-clear
-insheet using "./rawfiles/2006/PREANON.txt", delimiter(";")
-do "./rawfiles/pension_format.do"
-saveold "./rawfiles/2006/pension2006.dta", v(12) replace
+* New style: 2009-2020
+forvalues yy=2009/2020 {
+	local y =  substr("`yy'",3,4)
+	clear
+	insheet using "./rawfiles/`yy'/MCVL`yy'PRESTAC_CDF.txt", delimiter(";")
+	do "./rawfiles/pension_format.do"
+	save "./rawfiles/`yy'/pension`y'.dta", replace
+}
 
-* 2007 * * * * * * * * * * * * * * * * * * * * * * * * * * 
-clear
-insheet using "./rawfiles/2007/PREANON.txt", delimiter(";")
-do "./rawfiles/pension_format.do"
-saveold "./rawfiles/2007/pension2007.dta", v(12) replace
-
-* 2008 * * * * * * * * * * * * * * * * * * * * * * * * * * 
-clear
-insheet using "./rawfiles/2008/PREANON.txt", delimiter(";")
-do "./rawfiles/pension_format.do"
-saveold "./rawfiles/2008/pension2008.dta", v(12) replace
-
-* 2009 * * * * * * * * * * * * * * * * * * * * * * * * * * 
-clear
-insheet using "./rawfiles/2009/MCVL2009PRESTAC_CDF.txt", delimiter(";")
-do "./rawfiles/pension_format.do"
-saveold "./rawfiles/2009/pension2009.dta", v(12) replace
-
-* 2010 * * * * * * * * * * * * * * * * * * * * * * * * * * 
-clear
-insheet using "./rawfiles/2010/MCVL2010PRESTAC_CDF.txt", delimiter(";")
-do "./rawfiles/pension_format.do"
-saveold "./rawfiles/2010/pension2010.dta", v(12) replace
-
-* 2011 * * * * * * * * * * * * * * * * * * * * * * * * * * 
-clear
-insheet using "./rawfiles/2011/MCVL2011PRESTAC_CDF.txt", delimiter(";")
-do "./rawfiles/pension_format.do"
-saveold "./rawfiles/2011/pension2011.dta", v(12) replace
-
-* 2012 * * * * * * * * * * * * * * * * * * * * * * * * * * 
-clear
-insheet using "./rawfiles/2012/MCVL2012PRESTAC_CDF.txt", delimiter(";")
-do "./rawfiles/pension_format.do"
-saveold "./rawfiles/2012/pension2012.dta", v(12) replace
-
-* 2013 * * * * * * * * * * * * * * * * * * * * * * * * * * 
-clear
-insheet using "./rawfiles/2013/MCVL2013PRESTAC_CDF.txt", delimiter(";")
-do "./rawfiles/pension_format.do"
-saveold "./rawfiles/2013/pension2013.dta", v(12) replace
+* * * * * * * * * * * * * * * * * * * * * * * * * * * 

@@ -2,20 +2,22 @@
 
 * FORMAT AFILIATION FILES * * * * * * * * * * * * * * * * * * * * * * * * * * 
 
+* First, formal the personal file, containing all the demographic variables
+* -------------------------------------------------------------------------
 quietly do "./format_all_personal.do"
 
-
+* Second, read and format afiliation files, depending on the flavour
+* -------------------------------------------------------------------------
 * Old style: 2005-2008
-forvalues yy=2006/2008 {
+forvalues yy=2006(2)2008 {
 	local y =  substr("`yy'",3,4)
 	forvalues i=1/3{
 		clear 
-		insheet using "./rawfiles/`yy'/AFILANON`i'.txt", delimiter(";")
+		insheet using "./rawfiles/`yy'/AFILANON`i'.trs", delimiter(";")
 		save "./rawfiles/`yy'/afilianon`y'`i'.dta", replace
 	}
 	use "./rawfiles/`yy'/afilianon`y'1.dta"
 	forvalues i=2/3{		
-		append using "./rawfiles/`yy'/afilianon`y'`i'.dta"
 		append using "./rawfiles/`yy'/afilianon`y'`i'.dta"
 	}
 	do "./rawfiles/format_afilianon.do"
@@ -28,7 +30,7 @@ forvalues yy=2006/2008 {
 }
 
 * New Style, 3 files: 2009-2012
-forvalues yy=2010/2012 {
+forvalues yy=2011/2012 {
 	local y =  substr("`yy'",3,4)
 	forvalues i=1/3{
 		clear 
@@ -37,7 +39,6 @@ forvalues yy=2010/2012 {
 	}
 	use "./rawfiles/`yy'/afilianon`y'1.dta"
 	forvalues i=2/3{		
-		append using "./rawfiles/`yy'/afilianon`y'`i'.dta"
 		append using "./rawfiles/`yy'/afilianon`y'`i'.dta"
 	}
 	quietly do "./rawfiles/format_afilianon.do"
@@ -50,7 +51,7 @@ forvalues yy=2010/2012 {
 }
 
 * New Style, 4 files: 2013-2020
-forvalues yy=2012/2020 {
+forvalues yy=2013/2020 {
 	local y =  substr("`yy'",3,4)
 	forvalues i=1/4{
 		clear 
@@ -58,8 +59,7 @@ forvalues yy=2012/2020 {
 		save "./rawfiles/`yy'/afilianon`y'`i'.dta", replace
 	}
 	use "./rawfiles/`yy'/afilianon`y'1.dta"
-	forvalues i=2/3{		
-		append using "./rawfiles/`yy'/afilianon`y'`i'.dta"
+	forvalues i=2/4{		
 		append using "./rawfiles/`yy'/afilianon`y'`i'.dta"
 	}
 	quietly do "./rawfiles/format_afilianon.do"
