@@ -39,7 +39,7 @@ forvalues yy=2006(2)2008 {
 	replace dtout = date(death,"YM") if dtout==.
 	* Changing the end dates of retirement: ongoing
 	replace dtout = td(31dec`yy') if dtout==.
-	by id: replace year=year[_n-1] if year==.
+// 	by id: replace year=year[_n-1] if year==.
 
 	save "./rawfiles/afilianon`yy'.dta", replace
 }
@@ -75,7 +75,7 @@ forvalues yy=2011/2012 {
 	replace dtout = date(death,"YM") if dtout==.
 	* Changing the end dates of retirement: ongoing
 	replace dtout = td(31dec`yy') if dtout==.
-	by id: replace year=year[_n-1] if year==.
+// 	by id: replace year=year[_n-1] if year==.
 
 	save "./rawfiles/afilianon`yy'.dta", replace
 }
@@ -111,7 +111,7 @@ forvalues yy=2013/2020 {
 	replace dtout = date(death,"YM") if dtout==.
 	* Changing the end dates of retirement: ongoing
 	replace dtout = td(31dec`yy') if dtout==.
-	by id: replace year=year[_n-1] if year==.
+// 	by id: replace year=year[_n-1] if year==.
 
 	save "./rawfiles/afilianon`yy'.dta", replace
 }

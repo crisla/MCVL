@@ -6,7 +6,7 @@ replace state = "R" if state=="" & p_type!=.
 replace dtin = p_dtin if state=="R"
 
 * Cause 58 - retirement
-by id year: replace state="R" if cause[_n-1]==58&state=="U"&(state[_n+1]!="P"&state[_n+1]!="T"&state[_n+1]!="A")
+by id: replace state="R" if cause[_n-1]==58&state=="U"&(state[_n+1]!="P"&state[_n+1]!="T"&state[_n+1]!="A")
 drop if cause==81 &state=="R"
 
 *Adjust dates of entry to retirement: those in partial retirament count as employed
