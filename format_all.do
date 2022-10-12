@@ -20,7 +20,7 @@ forvalues yy=2006(2)2008 {
 	forvalues i=2/3{		
 		append using "./rawfiles/`yy'/afilianon`y'`i'.dta"
 	}
-	do "./rawfiles/format_afilianon.do"
+	quietly do "./rawfiles/format_afilianon.do"
 	
 	* Add personal file
 	merge m:1 id using "./rawfiles/`yy'/personal`y'.dta"
@@ -28,7 +28,7 @@ forvalues yy=2006(2)2008 {
 	drop _merge
 	
 	* Add pension file
-	append using using "./rawfiles/`yy'/pension`y'.dta"
+	append using "./rawfiles/`yy'/pension`y'.dta"
 	drop if _merge==2
 	drop _merge	
 	
@@ -43,7 +43,7 @@ forvalues yy=2006(2)2008 {
 	replace dtout = td(31dec`yy') if dtout==.
 	by id: replace year=year[_n-1] if year==.
 
-	saveold "./rawfiles/afilianon`yy'.dta", version (13) replace
+	save "./rawfiles/afilianon`yy'.dta", replace
 }
 
 * New Style, 3 files: 2009-2012
@@ -66,7 +66,7 @@ forvalues yy=2011/2012 {
 	drop _merge
 	
 	* Add pension file
-	append using using "./rawfiles/`yy'/pension`y'.dta"
+	append using "./rawfiles/`yy'/pension`y'.dta"
 	drop if _merge==2
 	drop _merge	
 	
@@ -81,7 +81,7 @@ forvalues yy=2011/2012 {
 	replace dtout = td(31dec`yy') if dtout==.
 	by id: replace year=year[_n-1] if year==.
 
-	saveold "./rawfiles/afilianon`yy'.dta", version (13) replace
+	save "./rawfiles/afilianon`yy'.dta", replace
 }
 
 * New Style, 4 files: 2013-2020
@@ -104,7 +104,7 @@ forvalues yy=2013/2020 {
 	drop _merge
 	
 	* Add pension file
-	append using using "./rawfiles/`yy'/pension`y'.dta"
+	append using "./rawfiles/`yy'/pension`y'.dta"
 	drop if _merge==2
 	drop _merge	
 	
@@ -119,7 +119,7 @@ forvalues yy=2013/2020 {
 	replace dtout = td(31dec`yy') if dtout==.
 	by id: replace year=year[_n-1] if year==.
 
-	saveold "./rawfiles/afilianon`yy'.dta", version (13) replace
+	save "./rawfiles/afilianon`yy'.dta", replace
 }
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * 

@@ -202,7 +202,8 @@ quietly do  "./coru_stu.do" // Same as ltu, plus all gaps between employment<15 
 
 * If you don't want to panelize the data (as in the LFS) you can stop here
 * (this is the right thing to do if you want to link to tax files)
-// saveold "./MCVL0313.dta", replace version(12)
+compress
+save "./MCVL20.dta", replace
 
 * Otherwise: select start year
 
@@ -211,7 +212,7 @@ quietly do  "./coru_stu.do" // Same as ltu, plus all gaps between employment<15 
 // drop if dtout<td(01jan2004)
 
 * 2003
-drop if dtout<td(01jan2003)
+// drop if dtout<td(01jan2003)
 
 * Panel flavour *********************************************
 
@@ -232,28 +233,28 @@ drop if dtout<td(01jan2003)
 * Split the sample into 2 parts for smaller RAMs
 
 *Part1
-drop if year>2007
-drop if year<2004
-quietly do  "./panel/monthly_panel_U0.do"
-// tab time state
-
-* Flows: uncomment for your correction flavour:
-do "./panel/export_flows_stu.do"
-// do "./panel/export_flows_ltu.do"
-// do "./panel/export_flows_none.do"
-
-saveold "./panel/flows_m00508.dta", replace version(12)
-
-* Part2
-use "./MCVL0313.dta", clear
-drop if year<2008
-
-* Flows: uncomment for your correction flavour:
-do "./panel/export_flows_stu.do"
-// do "./panel/export_flows_ltu.do"
-// do "./panel/export_flows_none.do"
-
-saveold "./panel/flows_m00813.dta", replace version(12)
+// drop if year>2007
+// drop if year<2004
+// quietly do  "./panel/monthly_panel_U0.do"
+// // tab time state
+//
+// * Flows: uncomment for your correction flavour:
+// do "./panel/export_flows_stu.do"
+// // do "./panel/export_flows_ltu.do"
+// // do "./panel/export_flows_none.do"
+//
+// saveold "./panel/flows_m00508.dta", replace version(12)
+//
+// * Part2
+// use "./MCVL0313.dta", clear
+// drop if year<2008
+//
+// * Flows: uncomment for your correction flavour:
+// do "./panel/export_flows_stu.do"
+// // do "./panel/export_flows_ltu.do"
+// // do "./panel/export_flows_none.do"
+//
+// saveold "./panel/flows_m00813.dta", replace version(12)
 
 **********************************************************************
 **********************************************************************
