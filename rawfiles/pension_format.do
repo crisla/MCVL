@@ -45,20 +45,21 @@ capture rename v43 p_maternity_extra
 capture rename v44 p_percentage_maternity_extra
 capture rename v45 p_coef_parcial
 
-* Drop variables of no interest
-drop v*
-
 * Redefine income in euros (per month)
-replace p_base = p_base/100
+replace p_inc_base = p_inc_base/100
 replace p_inc_extra1 = p_inc_extra1/100
 replace p_inc_extra2 = p_inc_extra2/100
 replace p_inc_extra3 = p_inc_extra3/100
-replace p_income = p_income/100
+replace p_income_m = p_income_m/100
 
 * Formating dates
 tostring p_dt, replace format(%20.0f)
 gen p_dtin = date( p_dt,"YM")
 format p_dtin %td
+
+tostring p_dtsitu, replace format(%20.0f)
+gen p_dtout = date( p_dtsitu,"YM")
+format p_dtout %td
 
 * Reformating type of pension - no widows or orfans
 replace p_type = "01" if p_type=="J1"
@@ -71,9 +72,9 @@ destring p_type, replace
 drop if p_type > 29
 
 * Only first date counts (and if it is after 2004)
-drop if p_year<2004
-sort id p_year
-by id: drop if _n != 1
+sort p_id p_year
+by p_id: keep if _n == _N
+sort id
 
 * Simplify pension formats
 replace p_type = 1 if p_type==1|p_type==2|p_type==4|(p_type>=10&p_type<=12)|p_type==14
