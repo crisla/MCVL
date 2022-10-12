@@ -4,7 +4,7 @@
 
 * First, formal the personal file, containing all the demographic variables
 * -------------------------------------------------------------------------
-quietly do "./format_all_personal.do"
+// quietly do "./format_all_personal.do"
 
 * Second, read and format afiliation files, depending on the flavour
 * -------------------------------------------------------------------------
