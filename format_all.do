@@ -29,8 +29,6 @@ forvalues yy=2006(2)2008 {
 	
 	* Add pension file
 	append using "./rawfiles/`yy'/pension`y'.dta"
-	drop if _merge==2
-	drop _merge	
 	
 	* Tie up the pension file to the afiliation file
 	quietly do "./rawfiles/pension_append.do"
@@ -67,9 +65,7 @@ forvalues yy=2011/2012 {
 	
 	* Add pension file
 	append using "./rawfiles/`yy'/pension`y'.dta"
-	drop if _merge==2
-	drop _merge	
-	
+
 	* Tie up the pension file to the afiliation file
 	quietly do "./rawfiles/pension_append.do"
 	
@@ -104,9 +100,7 @@ forvalues yy=2013/2020 {
 	drop _merge
 	
 	* Add pension file
-	append using "./rawfiles/`yy'/pension`y'.dta"
-	drop if _merge==2
-	drop _merge	
+	append using  "./rawfiles/`yy'/pension`y'.dta"
 	
 	* Tie up the pension file to the afiliation file
 	quietly do "./rawfiles/pension_append.do"
