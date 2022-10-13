@@ -92,7 +92,15 @@ forvalues yy=2013/2020 {
 	forvalues i=2/4{		
 		append using "./rawfiles/`yy'/afilianon`y'`i'.dta"
 	}
-	quietly do "./rawfiles/format_afilianon.do"
+	
+	* Record ERTEs within the employment spell
+	if `yy'==2020 {
+		quietly do "./rawfiles/format_afilianon_2020.do"		
+	}
+	else {
+		quietly do "./rawfiles/format_afilianon.do"		
+	}
+	
 	
 	* Add personal file
 	merge m:1 id using "./rawfiles/`yy'/personal`y'.dta"
@@ -117,4 +125,3 @@ forvalues yy=2013/2020 {
 }
 
 * * * * * * * * * * * * * * * * * * * * * * * * * * * 
-
