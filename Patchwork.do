@@ -4,7 +4,7 @@
 
 * 1. Join in formatted afiliation files
 ******************************************************************************
-global start_year = 2006
+global start_year = 2008
 global start_year_next = ${start_year}+1
 
 * Initiate the File
@@ -14,7 +14,7 @@ gen ext_dt=dtout
 replace dtout=td(31dec${start_year}) if dtout>td(31dec${start_year})
 
 * Main ppending loop
-forvalues yy=${start_year_next}/2020 {
+forvalues yy= 2009 /2020 {
 	append using "./rawfiles/afilianon`yy'.dta",force
 	replace year=`yy' if year==.
 	* Drop duplicate spells
