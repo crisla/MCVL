@@ -13,7 +13,7 @@ rename v7 living_region
 rename v8 death
 rename v9 country_birth
 rename v10 education
-drop v11
+capture drop v11
 
 
 gen dtbirth = date( birth,"YM")

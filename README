@@ -3,7 +3,7 @@ README
 ** Please see the Instructions.pdf file with information on how to obtain the data and more detailed
 explanations of what the code does **
 
-This code will clean the MCVL-CDF afiliation files (2004-2013), joining the different affiliation
+This code will clean the MCVL-CDF afiliation files (2004-2020), joining the different affiliation
 files into a single panel. It also links them with personal and pension files.
 An extension of the code cleans the fiscal (tax) file and joins it with the master afilaition file.
 
@@ -14,7 +14,7 @@ Details about this and the code in the robustness folder can be found in Lafuent
 
 In order to work, you will have to fill in the folders in rawfiles with the decompressed
 afiliation, pension, and personal information files. The codes work with their original names
-except for 2009-2013 where you need to make the .TXT at the end of the file .txt (lowercase)
+except for 2009-2020 where you need to make the .TXT at the end of the file .txt (lowercase)
 
 The code comes in 2 flavours, depending on your purposes. The order of the files should be:
 

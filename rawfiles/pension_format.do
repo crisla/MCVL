@@ -43,6 +43,7 @@ replace p_type = "02" if p_type=="J2"
 replace p_type = "03" if p_type=="J3"
 replace p_type = "04" if p_type=="J4"
 replace p_type = "05" if p_type=="J5"
+replace p_type = "28" if p_type=="2E"
 destring p_type, replace
 
 drop if p_type > 29

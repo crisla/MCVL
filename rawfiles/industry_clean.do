@@ -1,5 +1,5 @@
 
-// rename newind ind_old
+rename newind ind_old
 
 gen ind_short = 0
 
