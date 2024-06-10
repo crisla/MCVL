@@ -13,7 +13,7 @@ drop total_overlap
 capture drop days_c
 gen days_c = dtout-dtin
 gen inbetween_left = 0
-replace inbetween_left = 1 if days_c<0 // 43/11M
+replace inbetween_left = 1 if days_c<0 // 43/11Mns
 drop if inbetween_left
 drop inbetween_left
 
