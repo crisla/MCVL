@@ -110,8 +110,8 @@ foreach s in "P" "T" "U"{
 *
 
 * Censored observations for the last year
-drop if dtin>td(31dec2013)
-replace dtout=td(31dec2013) if  dtout>td(31dec2013)
+drop if dtin>td(31dec${end_year})
+replace dtout=td(31dec${end_year}) if  dtout>td(31dec${end_year})
 
 * 3 Unemployment Expansions
 ******************************************************************************
@@ -135,6 +135,7 @@ by id state: replace NoU = sum(scount)
 drop scount
 
 * Save the file
+sort id jobcount dtin dtout
 saveold "./MCVL_${end_year}.dta", v(12) replace
 
 ******************************************************************************

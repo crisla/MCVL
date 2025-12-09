@@ -6,6 +6,7 @@
 ******************************************************************************
 global start_year = 2006
 global start_year_next = ${start_year}+1
+global end_year = 2015
 
 * Initiate the File
 use "./rawfiles/afilianon${start_year}.dta", clear
@@ -14,7 +15,7 @@ gen ext_dt=dtout
 replace dtout=td(31dec${start_year}) if dtout>td(31dec${start_year})
 
 * Main appending loop
-forvalues yy= 2007 /2015 {
+forvalues yy= 2007 /${end_year} {
 	append using "./rawfiles/afilianon`yy'.dta",force
 	replace year=`yy' if year==.
 	* Drop duplicate spells
@@ -61,9 +62,9 @@ save "./Patchwork_baseline.dta", replace
 * follow Patchwork_retro, 
 * loading this file
 ********************************
-// * Keep one spell per person
-// by id jobcount: keep if _n==_N
-// save "./baseline_2015.dta", replace 
+* Keep one spell per person
+by id jobcount: keep if _n==_N
+save "./baseline_2015.dta", replace 
 
 * 2 Other adjustments
 ******************************************************************************
@@ -71,6 +72,9 @@ save "./Patchwork_baseline.dta", replace
 ** Autonomous adjustment **
 replace state = "A" if regi>700&regi<800
 replace state = "A" if regi>824&regi<840
+
+** The Specials Adjustment - just contributing but not actually working
+replace state = "R" if regi==140
 
 ** Industry harmonization **
 quietly do "./rawfiles/industry_clean_panel.do" 

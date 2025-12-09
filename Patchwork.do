@@ -6,6 +6,7 @@
 ******************************************************************************
 global start_year = 2006
 global start_year_next = ${start_year}+1
+global end_year = 2015
 
 * Initiate the File
 use "./rawfiles/afilianon${start_year}.dta", clear
@@ -61,9 +62,9 @@ save "./Patchwork_baseline.dta", replace
 * follow Patchwork_retro, 
 * loading this file
 ********************************
-// * Keep one spell per person
-// by id jobcount: keep if _n==_N
-// save "./baseline_2015.dta", replace 
+* Keep one spell per person
+by id jobcount: keep if _n==_N
+save "./baseline_2015.dta", replace 
 
 * 2 Other adjustments
 ******************************************************************************
