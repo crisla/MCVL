@@ -72,9 +72,6 @@ save "./Patchwork_baseline.dta", replace
 replace state = "A" if regi>700&regi<800
 replace state = "A" if regi>824&regi<840
 
-** The Specials Adjustment - just contributing but not actually working
-replace state = "R" if regi==140
-
 ** Industry harmonization **
 quietly do "./rawfiles/industry_clean_panel.do" 
 by id: replace ind_short=ind_short[_n-1] if state=="U"
