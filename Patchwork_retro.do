@@ -22,7 +22,10 @@ replace dtin = p_dtin if state=="R"
 * This drops observations that are ONLY retirement
 drop if state=="R"&id!=id[_n-1]&id!=id[_n+1]
 
-* Filling in date of birth (and age) from personal file
+* Interger age (from file)
+replace age = year-year(dtbirth)
+
+* Age at the begining of the spell
 by id: replace dtbirth = dtbirth[_n-1] if state=="R"
 gen age_in = year(dtin)-year(dtbirth)
 

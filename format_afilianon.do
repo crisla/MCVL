@@ -89,6 +89,9 @@ replace part = 2 if tyco==102|tyco==3|tyco==4|tyco==6|tyco==7
 replace part = 0 if tyco>=300&tyco<400
 replace part = 0 if tyco>=181&tyco<=186
 
+** Discontinous worker dummy
+gen fijo_disc = (tyco>=300&tyco<400)
+
 ** Creating an labour market state variable **
 
 gen state = "U" if tyrel>=700&tyrel<800
@@ -141,9 +144,9 @@ by id: replace inbetween = 2 if dtin[_n]>=dtin[_n-1]&dtout[_n]<=dtout[_n-1]&id[_
 * Drop full overlap spells.
 * I do not correct just now for minor overlaps 3 and 4, as I may be interested 
 * in recorded spell length by the admin - for exmple, in terms of job tenure.
-* I do record a varaible, multiemp, that quantifies how many other simultanaous
+* I do record a variable, multiemp, that quantifies how many other simultanaous
 * spells did the worker had.
-* maqx_dtout: lastest end of spell date
+* max_dtout: lastest end of spell date
 gen max_dtout = dtout
 by id: replace max_dtout = max_dtout[_n-1] if dtout[_n]<=max_dtout[_n-1]&dtin[_n]>=dtin[_n-1]
 * me: indicator for multiple employment spells

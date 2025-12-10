@@ -52,7 +52,7 @@ replace p_inc_extra2 = p_inc_extra2/100
 replace p_inc_extra3 = p_inc_extra3/100
 replace p_income_m = p_income_m/100
 
-* Formating dates
+* Formatting dates
 tostring p_dt, replace format(%20.0f)
 gen p_dtin = date( p_dt,"YM")
 format p_dtin %td

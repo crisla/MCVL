@@ -80,8 +80,14 @@ replace state = "R" if regi==140
 quietly do "./rawfiles/industry_clean_panel.do" 
 by id: replace ind_short=ind_short[_n-1] if state=="U"
 
-** Interger age **
+* Interger age
 replace age = year-year(dtbirth)
+
+* Zombie workers 
+
+
+* Clean-up
+drop samesame samejob muerto_vivo next_retire out_of_retirement
 
 * Education from the last record
 by id: replace education=education[_n-1] if education==""
