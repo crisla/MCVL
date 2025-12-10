@@ -49,8 +49,8 @@ sort id jobcount year dtin
 by id jobcount: gen state1 = state[_n-1] if _n==1
 by id: replace state1 = state[_n-1] if state1==""
 
-* last_spell and unfinish (ends before 31dec final year)
-* ------------------------------------------------------
+* last_spell and unfinish (ends before 31decof the last year)
+* ----------------------------------------------------------
 by id: gen last_spell=1 if _n==_N
 replace last_spell=0 if last_spell==.
 gen unfinish=1 if  last_spell==1&dtout<td(31dec${end_year})
@@ -77,3 +77,56 @@ by id : replace diff_days = cdtin[_n+1]-cdtout[_n]-1 if _n!=1
 
 replace diff_days = 0 if diff_days==.
 replace days_c = cdtout-cdtin
+
+// * Clear out overlapping spells left
+// gen inbetween_left = 0
+// replace inbetween_left = 1 if days_c<0 // 0.18% of observations
+// drop if inbetween_left
+// drop inbetween_left
+
+* * * * * * * * * * * *  EXPANDING UNEMPLOYMENT (1) * * * * * * * * * * * * 
+gen mod_u = 0
+
+* Adding missing days of unemployment :
+* -------------------------------------
+* Many of these are just a few days off - for adminsitrative reasons - but many 
+* of them (specially unemployment) are due to expiration of UI.Note that I only
+* consider unemployment spells that finish in employment, not retirement (R).
+by id: replace mod_u  = 1          if state[_n]=="U"&state[_n+1]!="U"&state[_n+1]!="R"&state[_n+1]!=""&diff_days>0
+by id: replace cdtout  = cdtin[_n+1] if state[_n]=="U"&state[_n+1]!="U"&state[_n+1]!="R"&state[_n+1]!=""&diff_days>0
+
+* Adding missing days of unemployment (unfinished spells as of the alst year):
+* -------------------------------------------------------------------
+* The trend in unemployment differs a lot from the lfs if we do not take into
+* account unfinished spells as of the end of the alst year.
+* (Except if the reason for the end of the spell is retirement or death)
+by id: replace mod_u  = 1           if state[_n]=="U"&dtout<td(31dec${end_year})&last_spell==1&regular_dismissal==1&year(cdtout)>${start_year}
+by id: replace cdtout=td(31dec${end_year}) if state[_n]=="U"&dtout<td(31dec${end_year})&last_spell==1&regular_dismissal==1&year(cdtout)>${start_year}
+
+* * * * * * * * * * * *   FIXING SPELLS OVER THE YEAR * * * * * * * * * * * *  
+sort id year jobcount cdtin cdtout 
+
+* As a result of the extended dates of end of spells, some spells now end in a 
+* different year that their corresponding one. 
+by id: gen gap_years = 0
+replace gap_years = year(cdtout)-year if old_obs==0
+
+* Expanding spells over time:
+expand gap_years+1 if state=="U"&gap_years>0, gen(u_ext)
+sort id year jobcount cdtin cdtout u_ext
+replace year=year[_n-1]+1 if u_ext==1
+
+* Fixing days
+replace cdtin = mdy(1,1,year) if year(cdtin)<year&old_obs==0
+replace cdtout = mdy(12,31,year) if year(cdtout)>year&old_obs==0
+by id: replace days_c = cdtout-cdtin+1 if old_obs==0
+
+* Fixing dates: orignal date in and out
+gen odtin =dtin
+gen odtout = dtout
+replace dtin=cdtin
+replace dtout=cdtout
+drop cdtin cdtout
+
+format odtin %td
+format odtout %td

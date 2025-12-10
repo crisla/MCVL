@@ -87,7 +87,7 @@ replace age = year-year(dtbirth)
 
 
 * Clean-up
-drop samesame samejob muerto_vivo next_retire out_of_retirement
+// drop samesame samejob muerto_vivo next_retire out_of_retirement
 
 * Education from the last record
 by id: replace education=education[_n-1] if education==""
@@ -222,7 +222,7 @@ quietly do  "./coru_stu.do" // Same as ltu, plus all gaps between employment<15 
 * If you don't want to panelize the data (as in the LFS) you can stop here
 * (this is the right thing to do if you want to link to tax files)
 compress
-save "./MCVL20.dta", replace
+save "./MCVL${end_year}.dta", replace
 
 * Otherwise: select start year
 

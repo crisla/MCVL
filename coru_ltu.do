@@ -49,11 +49,11 @@ sort id jobcount year dtin
 by id jobcount: gen state1 = state[_n-1] if _n==1
 by id: replace state1 = state[_n-1] if state1==""
 
-* last_spell and unfinish (ends before 31dec2013)
-* ---------------------------------------------
+* last_spell and unfinish (ends before 31decof the last year)
+* ----------------------------------------------------------
 by id: gen last_spell=1 if _n==_N
 replace last_spell=0 if last_spell==.
-gen unfinish=1 if  last_spell==1&dtout<td(31dec2013)
+gen unfinish=1 if  last_spell==1&dtout<td(31dec${end_year})
 replace unfinish=0 if unfinish==.
 
 by id: gen first_spell = 1 if _n==1
@@ -95,13 +95,13 @@ gen mod_u = 0
 by id: replace mod_u  = 1          if state[_n]=="U"&state[_n+1]!="U"&state[_n+1]!="R"&state[_n+1]!=""&diff_days>0
 by id: replace cdtout  = cdtin[_n+1] if state[_n]=="U"&state[_n+1]!="U"&state[_n+1]!="R"&state[_n+1]!=""&diff_days>0
 
-* Adding missing days of unemployment (unfinished spells as of 2013):
+* Adding missing days of unemployment (unfinished spells as of the alst year):
 * -------------------------------------------------------------------
 * The trend in unemployment differs a lot from the lfs if we do not take into
-* account unfinished spells as of the end of 2013.
+* account unfinished spells as of the end of the alst year.
 * (Except if the reason for the end of the spell is retirement or death)
-by id: replace mod_u  = 1           if state[_n]=="U"&dtout<td(31dec2013)&last_spell==1&regular_dismissal==1&year(cdtout)>2003
-by id: replace cdtout=td(31dec2013) if state[_n]=="U"&dtout<td(31dec2013)&last_spell==1&regular_dismissal==1&year(cdtout)>2003
+by id: replace mod_u  = 1           if state[_n]=="U"&dtout<td(31dec${end_year})&last_spell==1&regular_dismissal==1&year(cdtout)>${start_year}
+by id: replace cdtout=td(31dec${end_year}) if state[_n]=="U"&dtout<td(31dec${end_year})&last_spell==1&regular_dismissal==1&year(cdtout)>${start_year}
 
 * * * * * * * * * * * *   FIXING SPELLS OVER THE YEAR * * * * * * * * * * * *  
 sort id year jobcount cdtin cdtout 

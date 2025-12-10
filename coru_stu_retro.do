@@ -49,11 +49,11 @@ replace short_emp = 1 if emp_spell<360 & year(dtout)>=1992 & (state=="T"|state==
 replace short_emp = 1 if emp_spell<180 & year(dtout)<1992 & (state=="T"|state=="P")
 sort id jobcount dtin dtout
 
-* last_spell and unfinish (ends before 31dec2013)
+* last_spell and unfinish (ends before 31dec of the last year)
 * ---------------------------------------------
 by id: gen last_spell=1 if _n==_N
 replace last_spell=0 if last_spell==.
-gen unfinish=1 if  last_spell==1&dtout<td(31dec2013)
+gen unfinish=1 if  last_spell==1&dtout<td(31dec${end_year})
 replace unfinish=0 if unfinish==.
 
 by id: gen first_spell = 1 if _n==1
@@ -89,13 +89,13 @@ gen mod_u = 0
 by id: replace mod_u  = 1          if state[_n]=="U"&state[_n+1]!="U"&state[_n+1]!="R"&state[_n+1]!=""&diff_days>0
 by id: replace dtout  = dtin[_n+1] if state[_n]=="U"&state[_n+1]!="U"&state[_n+1]!="R"&state[_n+1]!=""&diff_days>0
 
-* Adding missing days of unemployment (unfinished spells as of 2013):
+* Adding missing days of unemployment (unfinished spells as of the last year):
 * -------------------------------------------------------------------
 * The trend in unemployment differs a lot from the lfs if we do not take into
-* account unfinished spells as of the end of 2013.
+* account unfinished spells as of the end of the last year.
 * (Except if the reason for the end of the spell is retirement or death)
-by id: replace mod_u  = 1           if state[_n]=="U"&dtout<td(31dec2013)&last_spell==1&regular_dismissal==1&first_spell!=1
-by id: replace dtout=td(31dec2013)  if state[_n]=="U"&dtout<td(31dec2013)&last_spell==1&regular_dismissal==1&first_spell!=1
+by id: replace mod_u  = 1           if state[_n]=="U"&dtout<td(31dec${end_year})&last_spell==1&regular_dismissal==1&first_spell!=1
+by id: replace dtout=td(31dec${end_year})  if state[_n]=="U"&dtout<td(31dec${end_year})&last_spell==1&regular_dismissal==1&first_spell!=1
 
 * * * * * * * * * * * *  EXPANDING UNEMPLOYMENT (2) * * * * * * * * * * * *  
 
@@ -107,8 +107,8 @@ gen state2 = state
 * Note: cause=94 marks discountinuous workes. The gap between jobs is voluntary.
 by id: replace state2="U" if state[_n]!="U"&state[_n+1]!="U"&state[_n+1]!="R"&diff_days>15&cause!=94
 
-* Adding employment spells that end before the end of 2013
-* ------------------------------------------------------------
+* Adding employment spells that end before the end of the last year
+* ----------------------------------------------------------------
 * approx. 60 % of the observations that would qualify are in 2013
 by id: replace state2="U" if last_spell==1&first_spell==0&unfinish==1&regular_dismissal==1&state!="R"&state!="U"&year(dtout)>2010
 
@@ -121,7 +121,7 @@ expand 2 if state2!=state, gen(hidden_u)
 sort id jobcount dtin dtout hidden_u
 by id: replace dtin=dtout[_n-1] if hidden_u==1
 by id: replace dtout=dtin[_n+1] if hidden_u==1&last_spell==0
-by id: replace dtout=td(31dec2013) if hidden_u==1&last_spell==1
+by id: replace dtout=td(31dec${end_year}) if hidden_u==1&last_spell==1
 
 replace days = dtout-dtin if hidden_u==1
 
