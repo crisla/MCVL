@@ -1,4 +1,7 @@
 // use "./MCVL0313.dta", clear
+global start_year = 2006
+global prev_year = ${start_year}-1
+global end_year = 2015
 
 * **************************************************************************** *
 * This file adds the wages.dta file, which is the sum of all tax files 	       *
@@ -12,14 +15,14 @@
 
 * Panel adjustment *********************************************
 
-replace year = year(dtout) if year(dtout)<2005
-* Censor observations that go over 2005
+replace year = year(dtout) if year(dtout)<${start_year}
+* Censor observations that go over the start year
 gen over05 = 0
-replace over05 = 1 if dtin<td(01jan2005)&dtout>td(01jan2005)&state!="R"
+replace over05 = 1 if dtin<td(01jan${start_year})&dtout>td(01jan${start_year})&state!="R"
 expand 2 if over05, gen(cen05)
 sort id year jobcount dtin dtout cen05
-by id: replace year=2004 if cen05[_n+1]==1&over05==1
-replace dtin =td(01jan2005) if cen05==1
+by id: replace year=${start_year} if cen05[_n+1]==1&over05==1
+replace dtin =td(01jan${start_year}) if cen05==1
 replace dtout =td(31dec2004) if cen05[_n+1]==1&over05==1
 replace days_c = dtout-dtin+1 if over05==1
 
@@ -51,8 +54,8 @@ sort id year dtin
 replace state="U" if state==""&_merge==2&key=="C"
 replace state="U" if state==""&_merge==2&key=="D"
 sort state id year dtin
-by state id year: replace income=income[_N] if firmID=="00"&income==.&income[_N]!=.&state=="U"&state[_N]=="U"&hidden_u!=1&_merge[_N]==2&dtout>=td(01jan2005)
-by state id year: replace income=income[_N] if state=="U"&income==.&income[_N]!=.&state[_N]=="U"&hidden_u!=1&_merge[_N]==2&dtout>=td(01jan2005)
+by state id year: replace income=income[_N] if firmID=="00"&income==.&income[_N]!=.&state=="U"&state[_N]=="U"&hidden_u!=1&_merge[_N]==2&dtout>=td(01jan${start_year})
+by state id year: replace income=income[_N] if state=="U"&income==.&income[_N]!=.&state[_N]=="U"&hidden_u!=1&_merge[_N]==2&dtout>=td(01jan${start_year})
 
 *Self-employed adjustment: match declared profits with unemployment spells
 gen profits = 1 if _merge==2&(key=="A"|key=="L"|key=="G"|key=="H"|key=="I"|key=="F")
@@ -92,16 +95,16 @@ replace av_income = 0 if hidden_u==1
 gen av_income_m = av_income*30 if income!=.
 
 * Before the clean up: uncomment to get a csv with wages by years
-// export delimited id firmID year state av_income_m days_firm days_c cop sevpay age if av_income!=.&av_income!=0&_merge!=2&dtout>td(01jan2005)&age>20&age<55 using "./sc/allwages.csv", replace
+// export delimited id firmID year state av_income_m days_firm days_c cop sevpay age if av_income!=.&av_income!=0&_merge!=2&dtout>td(01jan${start_year})&age>20&age<55 using "./sc/allwages.csv", replace
  
 *** Cleaning up ************************************************************
 
-* Here I drop the duplicate observations., so one spell=one observation.
+* Here I drop the duplicate observations, so one spell=one observation.
 * I also preserve the first and last wages for robutness.
 
-* For panel: select starting from 2005
+* For panel: select starting from the first year (2005 in the first code version)
 gen beyond05 = 0
-replace beyond05 = 1 if year>=2005
+replace beyond05 = 1 if year>=${start_year}
 
 * kepp the first and last wage
 sort id beyond05 jobcount year dtin

@@ -82,4 +82,4 @@ saveold "./rawfiles/wages_panel.dta", replace
 // keep id firmID wages year
 // by id firmID year: keep if _n==_N
 //
-// saveold "./rawfiles/wages_only_panel.dta", replace
+// saveold "./rawfiles/wages_only_panel.dta", version(12) replace

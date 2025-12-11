@@ -1,4 +1,6 @@
-use "./MCVL0313.dta", clear
+// use "./MCVL0313.dta", clear
+global start_year = 2006
+global end_year = 2015
 
 * **************************************************************************** *
 * This file adds the wages.dta file, which is the sum of all tax files 	       *
@@ -10,9 +12,9 @@ use "./MCVL0313.dta", clear
 
 * PRELIMINARIES *********************************************
 
-* Because the wage data is only available after 2005, all older spells are dropped
-* Dropping out cases before 2005
-drop if dtout<td(01jan2005)
+* Because the wage data is only available after 2006, all older spells are dropped
+* Dropping out cases before 2006
+drop if dtout<td(01jan${start_year})
 
 * Recoding colldiss (Colelctive Dissmissals dummy)
 sort id jobcount dtin
@@ -63,25 +65,26 @@ drop let1
 * Duplicating years *********************************************
 * Because we need to match one-year-fiscal-file with one-year-spells,
 * if you are using only one year (say, the last one in the sample)
+* or the version with one observation for each spell (but using all years)
 * you need to duplicate the spell creating one observation per year
 * that the spell is active. If you are using a panel, you don't need to
 * do this.
 ******************************************************************
-// sort id jobcount dtin
-// gen year_expansion = year(dtout)-year(dtin) if year(dtin)<year(dtout)&year(dtout)>=2005
-//
-// expand year_expansion+1 if year_expansion!=., gen(year_split)
-// sort id jobcount dtin year_split
-// gen year = year(dtin) if year_split==0
-// replace year = year[_n-1]+1 if year_split==1
-// drop if year_split==1&year<2005
+sort id jobcount dtin
+gen year_expansion = year(dtout)-year(dtin) if year(dtin)<year(dtout)&year(dtout)>=${start_year}
+
+expand year_expansion+1 if year_expansion!=., gen(year_split)
+sort id jobcount dtin year_split
+gen year = year(dtin) if year_split==0
+replace year = year[_n-1]+1 if year_split==1
+drop if year_split==1&year<${start_year}
 
 * For panel version: indicator for same job (corrected)
 * Comment out if using a single year
-gen jc = 1
-by id: replace jc = 0 if jobcount==jobcount[_n-1]&state==state[_n-1]
-by id: replace jobcount = sum(jc)
-drop jc
+// gen jc = 1
+// by id: replace jc = 0 if jobcount==jobcount[_n-1]&state==state[_n-1]
+// by id: replace jobcount = sum(jc)
+// drop jc
 
 *Adjusting dates
 gen nyd = date("01jan"+ string(year), "DMY") if year!=.
@@ -100,7 +103,7 @@ sort id year dtin
 replace state="U" if state==""&_merge==2&key=="C"
 replace state="U" if state==""&_merge==2&key=="D"
 sort state id year dtin
-by state id year: replace income=income[_N] if firmID=="00"&income==.&income[_N]!=.&state=="U"&state[_N]=="U"&hidden_u!=1&_merge[_N]==2&dtout>=td(01jan2005)
+by state id year: replace income=income[_N] if firmID=="00"&income==.&income[_N]!=.&state=="U"&state[_N]=="U"&hidden_u!=1&_merge[_N]==2&dtout>=td(01jan${start_year})
 
 
 *Self-employed adjustment: match declared profits with unemployment spells
@@ -129,7 +132,7 @@ replace av_income = 0 if hidden_u==1
 gen av_income_m = av_income*30 if income!=.
 
 * Before the clean up: uncomment to get a csv with wages by years
-// export delimited id firmID year state av_income_m days_firm days cop sevpay age if av_income!=.&av_income!=0&_merge!=2&dtout>td(01jan2005)&age>20&age<55 using "./sc/allwages.csv", replace
+// export delimited id firmID year state av_income_m days_firm days cop sevpay age if av_income!=.&av_income!=0&_merge!=2&dtout>td(01jan${start_year})&age>20&age<55 using "./sc/allwages.csv", replace
 
 *** Cleaning up ************************************************************
 * Here I drop the duplicate observations., so one spell=one observation.
@@ -137,7 +140,7 @@ gen av_income_m = av_income*30 if income!=.
 
 sort id jobcount year dtin
 by id jobcount: gen start_inc = av_income[1]
-by id jobcount: replace start_inc = av_income[2] if year[2]==2005
+by id jobcount: replace start_inc = av_income[2] if year[2]==${start_year}
 by id jobcount: gen end_inc = av_income[_N]
 rename av_income mean_income
 rename av_income_m mean_income_m
@@ -159,7 +162,7 @@ gen adjincome = av_income/cop
 gen adjincome_m = (adjincome/365)*30
 
 * Uncomment to export a csv file with the resulting wages (for figures and tables)
-// export delimited id state jobcount av_income_m adjincome_m days cop start_inc sevpay age if av_income!=.&av_income!=0&_merge!=2&dtout>td(01jan2005)&av_income!=av_income[_n-1]&age>20&age<55 using "./sc/wages.csv", replace
+// export delimited id state jobcount av_income_m adjincome_m days cop start_inc sevpay age if av_income!=.&av_income!=0&_merge!=2&dtout>td(01jan${start_year})&av_income!=av_income[_n-1]&age>20&age<55 using "./sc/wages.csv", replace
 
 replace av_income = adjincome
 replace av_income_m = adjincome_m

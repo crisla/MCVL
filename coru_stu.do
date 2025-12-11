@@ -95,13 +95,20 @@ gen mod_u = 0
 by id: replace mod_u  = 1          if state[_n]=="U"&state[_n+1]!="U"&state[_n+1]!="R"&state[_n+1]!=""&diff_days>0
 by id: replace cdtout  = cdtin[_n+1] if state[_n]=="U"&state[_n+1]!="U"&state[_n+1]!="R"&state[_n+1]!=""&diff_days>0
 
-* Adding missing days of unemployment (unfinished spells as of 2013):
+* Adding missing days of unemployment (unfinished spells as of 2the end of the sample):
 * -------------------------------------------------------------------
 * The trend in unemployment differs a lot from the lfs if we do not take into
-* account unfinished spells as of the end of 2013.
+* account unfinished spells as of the end of the sample.
 * (Except if the reason for the end of the spell is retirement or death)
-by id: replace mod_u  = 1           if state[_n]=="U"&dtout<td(31dec${end_year})&last_spell==1&regular_dismissal==1&year(cdtout)>${start_year}
-by id: replace cdtout=td(31dec${end_year}) if state[_n]=="U"&dtout<td(31dec${end_year})&last_spell==1&regular_dismissal==1&year(cdtout)>${start_year}
+
+* Add a limit to the long-term spell 2 years missing
+global ylimit_ltu = 2
+
+* Mark cases
+by id: replace mod_u  = 1           if state[_n]=="U"&dtout<td(31dec${end_year})&last_spell==1&regular_dismissal==1&year(cdtout)>${start_year}&(${end_year}-year(dtout))<${ylimit_ltu}
+
+* Expand spells
+by id: replace cdtout=td(31dec${end_year}) if state[_n]=="U"&dtout<td(31dec${end_year})&last_spell==1&regular_dismissal==1&year(cdtout)>${start_year}&(${end_year}-year(dtout))<${ylimit_ltu}
 
 * * * * * * * * * * * *  EXPANDING UNEMPLOYMENT (2) * * * * * * * * * * * *  
 

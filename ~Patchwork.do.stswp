@@ -63,8 +63,8 @@ save "./Patchwork_baseline.dta", replace
 * loading this file
 ********************************
 * Keep one spell per person
-by id jobcount: keep if _n==_N
-save "./baseline_2015.dta", replace 
+// by id jobcount: keep if _n==_N
+// save "./baseline_2015.dta", replace 
 
 * 2 Other adjustments
 ******************************************************************************
@@ -170,18 +170,29 @@ replace short_emp = 1 if emp_spell<180 & year(dtout)<1992 & (state=="T"|state=="
 sort id year jobcount dtin
 
 * Midpoint save: uncomment to save before spell corrections
-// use "/./Patchwork_midpoint.dta", clear
+// save "./Patchwork_midpoint.dta", replace
+use "./Patchwork_midpoint.dta", clear
 
 * Sample Selection ***********************************************************
 
 * Uncomment your option:
 
 * OPTION 1: include obs from 2003 onwards. Lighter version.
+global year_0 = 2004
 
-// * Include 2003
-// by id: drop if dtout[_n+1]<td(01jan2003)
-// replace year = 2004 if dtout<td(01jan2005)
-// expand 2 if dtout>td(01jan2005)&dtin<td(01jan2005)&year==2005, gen(y04)
+* Drop observations ending before year_0
+by id: drop if dtout<td(01jan${year_0})
+* Create extra observations for years until start
+expand ${start_year}-${year_0}+1 if dtout>td(01jan${start_year})&dtin<td(01jan${start_year})&year==${start_year}, gen(panel_obs)
+sort id jobcount year dtin dtout
+by id jobcount year: replace panel_obs=sum(panel_obs)
+replace year = year - panel_obs
+
+* Cleaning up
+drop panel_obs
+sort id year jobcount dtin dtout
+gen old_obs = (year(dtout)<${year_0})
+
 // replace year=2004 if y04==1
 // drop y04
 // drop if state ==""
@@ -200,10 +211,10 @@ sort id year jobcount dtin
 
 * OPTION 2 : include all observations. May be more innacurate the further back it's used.
 
-gen old_obs = 0
-* Change year (necessary for expansion to work right)
-replace year = year(dtout) if year(dtout)<${start_year}
-replace old_obs = 1 if year(dtout)<${start_year}
+// gen old_obs = 0
+// * Change year (necessary for expansion to work right)
+// replace year = year(dtout) if year(dtout)<${start_year}
+// replace old_obs = 1 if year(dtout)<${start_year}
 
 
 * 3 Unemployment Expansions
@@ -222,22 +233,23 @@ quietly do  "./coru_stu.do" // Same as ltu, plus all gaps between employment<15 
 * If you don't want to panelize the data (as in the LFS) you can stop here
 * (this is the right thing to do if you want to link to tax files)
 compress
-save "./MCVL${end_year}.dta", replace
+save "./MCVL${end_year}_new.dta", replace
 
-* Otherwise: select start year
+// * Otherwise: select start year
+global start_year = 2004
+global end_year = 2015
 
-* 2004
-// replace year = 2004 if dtout<td(01jan2005)&dtout!=.
-// drop if dtout<td(01jan2004)
+drop if dtout<td(01jan${start_year})
+// replace year = ${start_year} if dtout<=td(31dec${start_year})&dtout!=.
+replace year = ${start_year} if dtin<td(01jan${start_year})&dtin!=.
 
-* 2003
-// drop if dtout<td(01jan2003)
+
 
 * Panel flavour *********************************************
 
 * Transform into quarterly panel
-// do  "./panel/quarterly_panel_U0.do"
-// tab time state
+do  "./panel/quarterly_panel_U0.do"
+tab time state
 
 * Flows: uncomment for your correction flavour:
 // do "./panel/export_flows_stu.do"
