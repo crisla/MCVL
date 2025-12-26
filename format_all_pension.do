@@ -10,7 +10,7 @@ forvalues yy=2006/2008 {
 }
 
 * New style: 2009-2015
-forvalues yy=2009/2015 {
+forvalues yy=2009/2020 {
 	local y =  substr("`yy'",3,4)
 	clear
 	insheet using "./rawfiles/`yy'/MCVL`yy'PRESTAC_CDF.txt", delimiter(";")

@@ -235,13 +235,13 @@ quietly do  "./coru_stu.do" // Same as ltu, plus all gaps between employment<15 
 compress
 save "./MCVL${end_year}_new.dta", replace
 
-// * Otherwise: select start year
-// global start_year = 2004
-// global end_year = 2015
-//
-// drop if dtout<td(01jan${start_year})
-// // replace year = ${start_year} if dtout<=td(31dec${start_year})&dtout!=.
-// replace year = ${start_year} if dtin<td(01jan${start_year})&dtin!=.
+* Otherwise: select start year
+global start_year = 2006
+global end_year = 2015
+
+drop if dtout<td(01jan${start_year})
+// replace year = ${start_year} if dtout<=td(31dec${start_year})&dtout!=.
+replace year = ${start_year} if dtin<td(01jan${start_year})&dtin!=.
 
 
 
@@ -252,9 +252,9 @@ do  "./panel/quarterly_panel_U0.do"
 tab time state
 
 * Flows: uncomment for your correction flavour:
-// do "./panel/export_flows_stu.do"
-// do "./panel/export_flows_ltu.do"
-// do "./panel/export_flows_none.do"
+do "./panel/export_flows_stu_q.do"
+// do "./panel/export_flows_ltu_q.do"
+// do "./panel/export_flows_none_q.do"
 
 * Transform into monthly panel
 * WARNING: this requires more than 32GB of RAM! 
