@@ -4,7 +4,7 @@
 
 * 1. Load your afilianon file (this assumes you use the 2013 file)
 ******************************************************************************
-global end_year = 2015
+global end_year = 2020
 
 // use "./rawfiles/afilianon${end_year}.dta", clear
 use "./baseline_${end_year}.dta", clear

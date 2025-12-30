@@ -1,0 +1,37 @@
+* ADD GEOGRAPHIC DATA * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
+* First, read files from INE 2025
+* -------------------------------------------------------------------------
+* This one ahs municipalities names, but not provinces
+import delimited ".\rawfiles\muni_codes25.csv", stringcols(3 4) clear
+save ".\rawfiles\muni_mapper.dta", replace
+clear
+* This one has provinces!
+import delimited ".\rawfiles\provi_codes25.csv"
+* Merge in a single file
+merge 1:m cpro using ".\muni_mapper.dta"
+
+* Generate a variable to marge with the main afiliation file: adress there, muni_code here
+tostring cpro, gen(cpro_s)
+gen muni_code = cpro_s+ cmun
+destring muni_code, replace
+
+* Some renaming
+rename nombre muni_name
+rename cpro prov_code
+rename provincia province
+rename codauto ca_code
+
+* Add province codes for those in small rural areas (less than 40k municipality)
+sort prov_code muni_code
+expand 2 if prov_code[_n]!=prov_code[_n+1], gen(prov0)
+replace muni_code = prov_code*1000 if prov0==1
+replace muni_name = "NA" if prov0==1
+
+* Some cleaning
+drop cpro_s _merge cmun dc prov0
+
+* Saving
+save ".\muni_mapper.dta", replace
+
+

@@ -6,7 +6,7 @@
 ******************************************************************************
 global start_year = 2006
 global start_year_next = ${start_year}+1
-global end_year = 2015
+global end_year = 2020
 
 * Initiate the File
 use "./rawfiles/afilianon${start_year}.dta", clear
@@ -14,8 +14,8 @@ gen year=${start_year}
 gen ext_dt=dtout
 replace dtout=td(31dec${start_year}) if dtout>td(31dec${start_year})
 
-* Main appending loop
-forvalues yy= 2007 /2015 {
+* Main appending loop WARNING: CHANGE END YEAR IN LOOP
+forvalues yy= 2007 /2020 {
 	append using "./rawfiles/afilianon`yy'.dta",force
 	replace year=`yy' if year==.
 	* Drop duplicate spells
@@ -55,7 +55,7 @@ by id jobcount: replace dtout = mdy(12,31,year) if newobs>0&year<year(dtout)
 by id jobcount: replace dtin = mdy(1,1,year) if newobs>0&year>year(dtin)&year>${start_year}
 
 * Uncomment to safe a backup at this point
-save "./Patchwork_baseline.dta", replace 
+// save "./Patchwork_baseline.dta", replace 
 
 ********************************
 * Uncomment to save unique file - 
@@ -63,8 +63,8 @@ save "./Patchwork_baseline.dta", replace
 * loading this file
 ********************************
 * Keep one spell per person
-// by id jobcount: keep if _n==_N
-// save "./baseline_2015.dta", replace 
+by id jobcount: keep if _n==_N
+save "./baseline_${end_year}.dta", replace 
 
 * 2 Other adjustments
 ******************************************************************************
