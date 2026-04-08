@@ -52,34 +52,28 @@ gen full_key = key + string(subkey)
 drop kids*
 drop grand*
 
-// gen severance =1 if key=="L"&subkey==5
-// replace severance =0 if severance==.
+// sort id firmID year
+// by id firmID: gen years_firm = _N
 
-sort id year firmID full_key
+gen severance =1 if key=="L"&subkey==5
+replace severance =0 if severance==.
+
+
+sort id year firmID 
 gen all_money_in = moneyin+espec
-by id year firmID full_key: gen income = sum(all_money_in)
-by id year firmID full_key: replace income = income[_N]
 
-by id year firmID full_key: gen repe = (full_key==full_key[_n+1]) // 1.11% cases in 2006-2020
 
-drop if repe==1
 
-* For the wage paney, I keep only the money
-keep id firmID year full_key income
-
-reshape wide income, i(id year firmID) j(full_key) string
-
-egen total_income = rowtotal(income*)
 
 // by id firmID year: gen income = sum(moneyin+espec) if severance==0
 // by id firmID year:replace income = income[_N]
 // gen av_income_tax = income/years_firm
 
-// gen sevpay = 0
-// by id firmID year: replace sevpay = sum(moneyin) if severance==1
-// by id firmID year : replace sevpay = sum(sevpay)
+gen sevpay = 0
+by id firmID year: replace sevpay = sum(moneyin) if severance==1
+by id firmID year : replace sevpay = sum(sevpay)
 
-// keep id firmID key subkey income sevpay year 
+keep id firmID key subkey income sevpay year 
 // keep id firmID key subkey income av_income_tax sevpay year 
 // by id firmID: keep if _n==_N
 
@@ -88,14 +82,14 @@ egen total_income = rowtotal(income*)
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 *  In case you want to keep only wages, no severance payments or anything else
 
-// sort id firmID year
-//
-// drop if key!="A"
-//
-// by id firmID year: gen wages = sum(moneyin+espec)
-// by id firmID year: replace wages = wages[_N]
-//
-// keep id firmID wages year
-// by id firmID year: keep if _n==_N
+sort id firmID year
 
-save "./rawfiles/wages_panel_${end_year}.dta", replace
+drop if key!="A"
+
+by id firmID year: gen wages = sum(moneyin+espec)
+by id firmID year: replace wages = wages[_N]
+
+keep id firmID wages year
+by id firmID year: keep if _n==_N
+
+saveold "./rawfiles/wages_only_panel_${end_year}.dta", replace

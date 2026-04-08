@@ -1,5 +1,3 @@
-// use <insert your formatted year file here> clear
-
 * **************************************************************************** *
 * This file adds the wages.dta file, which is the sum of all tax files 	       *
 * with the formatted working histories. For this we need to duplicate          *
@@ -7,13 +5,21 @@
 * match them with their wages. Then I take the average wage in the next job    *
 * as the wage variable and drop all repeated cases.                            *
 * **************************************************************************** *
+global start_year = 2006
+global prev_year = ${start_year}-1
+global end_year = 2020
 
 * PRELIMINARIES *********************************************
 
-* Optional: Drop cases before 2005 (not available fiscal records before 2005)
+* Optional: Drop cases before 2006 (not available fiscal records before 2006)
 * This makes it run faster, if you don't mind missing old observations.
-// drop if dtout<td(01jan2005)
+// drop if dtout<td(01jan2006)
 
+* If you haven't done so already, format fiscal files
+// do "./format_all_fiscal.do"
+
+* Load your file here (after Patchwork_retro.do)
+use "./MCVL_${end_year}.dta", clear
 
 * Duplicating years *********************************************
 * Because we need to match one-year-fiscal-file with one-year-spells,
@@ -23,13 +29,20 @@
 * do this.
 ******************************************************************
 sort id jobcount dtin
-gen year_expansion = year(dtout)-year(dtin) if year(dtin)<year(dtout)&year(dtout)>=2005
+gen year_file = year
+drop year
+gen year = year(dtin)
+replace year = ${start_year} if year<${start_year}
+
+gen year_expansion = year(dtout)-year if year(dtin)<year(dtout)&year(dtout)>=${start_year}
 
 expand year_expansion+1 if year_expansion!=., gen(year_split)
 sort id jobcount dtin year_split
-gen year = year(dtin) if year_split==0
+
 replace year = year[_n-1]+1 if year_split==1
-drop if year_split==1&year<2005
+replace year=. if year(dtout)<${start_year}
+
+// drop if year_split==1&year<${start_year}
 
 *Adjusting dates
 gen nyd = date("01jan"+ string(year), "DMY") if year!=.
@@ -46,16 +59,29 @@ replace firmID = "0"+firmID if firm1==""|firm1==" "
 
 * MERGING  *********************************************
 
-merge m:m id firmID year using "./rawfiles/wages_panel.dta"
+merge m:1 id firmID year using "./rawfiles/wages_panel_${end_year}.dta"
+// merge m:m id firmID year using "./rawfiles/wages_only_panel_${end_year}.dta"
 
-sort id year dtin
+sort id year jobcount dtin
+
+* We need to bring the key variable back. Start with key=A, most common cases
+gen key = "A" if incomeA0!=.|incomeA1!=.
+replace key = "B" if (incomeB1!=.|incomeB2!=.|incomeB3!=.|incomeB4!=.)&key==""
+replace key = "C" if incomeC0!=.&key==""
+replace key = "F" if (incomeF1!=.|incomeF2!=.|incomeF3!=.|incomeF0!=.)&key==""
+replace key = "G" if (incomeG1!=.|incomeG3!=.)&key==""
+replace key = "H" if (incomeH1!=.|incomeH2!=.|incomeH4!=.)&key==""
+* For L key:
+egen TincomeL = rowtotal(incomeL*)
+replace key="L" if TincomeL>0&key==""
+drop TincomeL
 
 * Unemployment adjustment: match recorded UB with unemployment spells
 replace state="U" if state==""&_merge==2&key=="C"
 replace state="U" if state==""&_merge==2&key=="D"
 sort state id year dtin
-by state id year: replace income=income[_N] if firmID=="00"&income==.&income[_N]!=.&state=="U"&state[_N]=="U"&hidden_u!=1&_merge[_N]==2&dtout>=td(01jan2005)
-by state id year: replace income=income[_N] if state=="U"&income==.&income[_N]!=.&state[_N]=="U"&hidden_u!=1&_merge[_N]==2&dtout>=td(01jan2005)
+by state id year: replace total_income=total_income[_N] if firmID=="00"&total_income==.&total_income[_N]!=.&state=="U"&state[_N]=="U"&hidden_u!=1&_merge[_N]==2&dtout>=td(01jan${start_year})
+by state id year: replace total_income=total_income[_N] if state=="U"&total_income==.&total_income[_N]!=.&state[_N]=="U"&hidden_u!=1&_merge[_N]==2&dtout>=td(01jan${start_year})
 
 *Self-employed adjustment: match declared profits with unemployment spells
 gen profits = 1 if _merge==2&(key=="A"|key=="L"|key=="G"|key=="H"|key=="I"|key=="F")
@@ -63,11 +89,11 @@ replace profits=0 if profits==.
 replace state = "A" if profits==1&state==""
 
 sort id year profits //firmID
-by id year profits : gen income2 = sum(income) if profits==1
-by id year profits : replace income = income2[_N] if profits==1
+by id year profits : gen income2 = sum(total_income) if profits==1
+by id year profits : replace total_income = income2[_N] if profits==1
 
 sort state id year profits dtin
-by state id year: replace income=income[_N] if income==.&income2[_N]!=.&state=="A"&state[_N]=="A"&_merge[_N]==2&profits[_N]==1
+by state id year: replace total_income=total_income[_N] if total_income==.&income2[_N]!=.&state=="A"&state[_N]=="A"&_merge[_N]==2&profits[_N]==1
 drop income2 profits
 
 * Daily Income calculation *********************************************
@@ -86,12 +112,12 @@ by id year: replace days_u = sum(days_u) if state=="U"&hidden_u==0
 by id year: replace days_u = days_u[_N] if state=="U"&hidden_u==0
 
 * Average daily income
-gen av_income = income/(days_firm) if income!=.&state!="U"
-replace av_income = income/(days_u) if income!=.&state=="U"&hidden_u==0
+gen av_income = total_income/(days_firm) if total_income!=.&state!="U"
+replace av_income = total_income/(days_u) if total_income!=.&state=="U"&hidden_u==0
 replace av_income = 0 if hidden_u==1
 
 * Average monthly income
-gen av_income_m = av_income*30 if income!=.
+gen av_income_m = av_income*30 if total_income!=.
 
 * Before the clean up: uncomment to get a csv with wages by years
 // export delimited id firmID year state av_income_m days_firm days_c cop sevpay age if av_income!=.&av_income!=0&_merge!=2&dtout>td(01jan2005)&age>20&age<55 using "./sc/allwages.csv", replace
@@ -150,6 +176,7 @@ by id: replace all_time_employed =sum(all_time_employed)
 gen income_id = all_time_income/all_time_employed
 by id: replace income_id = income_id[_N]
 drop all_time_income  all_time_employed
+rename income_id IDincome
 
 * Make sure non-registered unemployment spells get zero
 replace av_income = 0 if hidden_u==1
@@ -157,7 +184,9 @@ replace av_income = 0 if hidden_u==1
 gen year_in = year(dtin)
 gen year_out = year(dtout)
 
+drop income*
+
 * Uncomment to export a csv file with the resulting wages (for figures and tables)
 // export delimited id state jobcount av_income_m av_income days year_in year_out cop start_inc sevpay age if av_income!=.&av_income!=0&_merge!=2&age>20&age<55 using "./sc/wages.csv", replace
 
-saveold "./MCVL_wages.dta", v(12) replace
+saveold "./MCVL_wages_${end_year}.dta", v(12) replace

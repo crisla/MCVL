@@ -2,9 +2,9 @@
 * FORMAT ONE YEAR FILE
 ******************************************************************************
 
-* 1. Load your afilianon file (this assumes you use the 2013 file)
+* 1. Loading file
 ******************************************************************************
-global end_year = 2020
+global end_year = 2021
 
 // use "./rawfiles/afilianon${end_year}.dta", clear
 use "./baseline_${end_year}.dta", clear
@@ -71,7 +71,7 @@ order year state dtin dtout,after(jobcount)
 quietly do "./cma.do"
 
 * Counting Spells *************************************************************
-order year state dtin dtout,after(jobcount)
+order state dtin dtout,after(jobcount)
 
 * Generating firm identifiers (recalls don't count as different jobs)
 tostring firm2, replace
@@ -223,3 +223,23 @@ saveold "./MCVL_${end_year}.dta", v(12) replace
 // gen year_out = year(dtout)
 // drop year_d1 // 2005 base year
 //
+// * PANELIZATION (to turn back into a panel to match with wages/cotizaciones) *********************************************
+// * Year consistent with panel
+// replace year = year(dtout) if year>year(dtout)&year(dtout)>=${start_year}
+// replace year = ${start_year} if year>year(dtout)&year(dtout)<${start_year}
+
+// * Panelize
+// gen newobs = 0
+// replace newobs = year-max(year(dtin),${start_year}) if new_blood==1&year>${start_year}
+//
+// expand newobs+1, gen(new_panel_obs)
+//
+// sort id jobcount dtin dtout new_panel_obs
+// by id jobcount: replace year = max(year(dtin),${start_year}) if new_panel_obs==0&new_panel_obs[_n+1]==1
+// by id jobcount: replace year = year[_n-1]+1 if new_panel_obs==1
+//
+// by id jobcount: replace dtout = mdy(12,31,year) if newobs>0&year<year(dtout)
+// by id jobcount: replace dtin = mdy(1,1,year) if newobs>0&year>year(dtin)&year>${start_year}
+
+// by id jobcount: replace year = max(year(dtin),${start_year}) if new_panel_obs==0&new_panel_obs[_n+1]==1
+// by id jobcount: replace year = year[_n-1]+1 if new_panel_obs==1

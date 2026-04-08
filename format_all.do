@@ -82,7 +82,7 @@ forvalues yy=2009/2012 {
 }
 
 * New Style, 4 files: 2013-2015
-forvalues yy=2013/2020 {
+forvalues yy=2021/2021 {
 	local y =  substr("`yy'",3,4)
 	forvalues i=1/4{
 		clear 
@@ -95,7 +95,7 @@ forvalues yy=2013/2020 {
 	}
 	
 	* Record ERTEs within the employment spell
-	if `yy'==2020 {
+	if `yy'>=2020 {
 		quietly do "./rawfiles/format_afilianon_2020.do"		
 	}
 	else {

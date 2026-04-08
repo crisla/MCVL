@@ -4,9 +4,9 @@
 
 * 1. Join in formatted afiliation files
 ******************************************************************************
-global start_year = 2006
+global start_year = 2006                   // <- Change accordingly
 global start_year_next = ${start_year}+1
-global end_year = 2020
+global end_year = 2021                     // <- Change accordingly
 
 * Initiate the File
 use "./rawfiles/afilianon${start_year}.dta", clear
@@ -14,8 +14,8 @@ gen year=${start_year}
 gen ext_dt=dtout
 replace dtout=td(31dec${start_year}) if dtout>td(31dec${start_year})
 
-* Main appending loop WARNING: CHANGE END YEAR IN LOOP
-forvalues yy= 2007 /2020 {
+* Main appending loop WARNING: CHANGE END YEAR IN LOOP <- Change accordingly
+forvalues yy= 2007 /2021 {
 	append using "./rawfiles/afilianon`yy'.dta",force
 	replace year=`yy' if year==.
 	* Drop duplicate spells
@@ -37,34 +37,25 @@ by id: replace jc = sum(jc)
 replace jobcount = jc
 drop jc
 
-* Year consistent with panel
-replace year = year(dtout) if year>year(dtout)&year(dtout)>=${start_year}
-replace year = ${start_year} if year>year(dtout)&year(dtout)<${start_year}
-
-* Panelize
-gen newobs = 0
-replace newobs = year-max(year(dtin),${start_year}) if new_blood==1&year>${start_year}
-
-expand newobs+1, gen(new_panel_obs)
-
-sort id jobcount dtin dtout new_panel_obs
-by id jobcount: replace year = max(year(dtin),${start_year}) if new_panel_obs==0&new_panel_obs[_n+1]==1
-by id jobcount: replace year = year[_n-1]+1 if new_panel_obs==1
-
-by id jobcount: replace dtout = mdy(12,31,year) if newobs>0&year<year(dtout)
-by id jobcount: replace dtin = mdy(1,1,year) if newobs>0&year>year(dtin)&year>${start_year}
-
-* Uncomment to safe a backup at this point
-// save "./Patchwork_baseline.dta", replace 
-
 ********************************
 * Uncomment to save unique file - 
 * follow Patchwork_retro, 
 * loading this file
 ********************************
 * Keep one spell per person
-by id jobcount: keep if _n==_N
-save "./baseline_${end_year}.dta", replace 
+sort id jobcount dtin dtout
+by id jobcount: keep if _n==_N                // <- Change accordingly
+save "./baseline_${end_year}.dta", replace    // <- Change accordingly
+
+
+sort id jobcount dtin dtout 
+by id jobcount: replace dtout = mdy(12,31,year) if year<year(dtout)
+by id jobcount: replace dtin = mdy(1,1,year) if year>year(dtin)&year>${start_year}
+
+* Uncomment to safe a backup at this point
+save "./Patchwork_baseline.dta", replace 
+
+
 
 * 2 Other adjustments
 ******************************************************************************
@@ -171,7 +162,7 @@ sort id year jobcount dtin
 
 * Midpoint save: uncomment to save before spell corrections
 // save "./Patchwork_midpoint.dta", replace
-use "./Patchwork_midpoint.dta", clear
+// use "./Patchwork_midpoint.dta", clear
 
 * Sample Selection ***********************************************************
 
@@ -233,11 +224,11 @@ quietly do  "./coru_stu.do" // Same as ltu, plus all gaps between employment<15 
 * If you don't want to panelize the data (as in the LFS) you can stop here
 * (this is the right thing to do if you want to link to tax files)
 compress
-save "./MCVL${end_year}_new.dta", replace
+save "./MCVL${end_year}.dta", replace
 
 * Otherwise: select start year
-global start_year = 2006
-global end_year = 2015
+global start_year = 2013
+global end_year = 2020
 
 drop if dtout<td(01jan${start_year})
 // replace year = ${start_year} if dtout<=td(31dec${start_year})&dtout!=.
@@ -248,7 +239,8 @@ replace year = ${start_year} if dtin<td(01jan${start_year})&dtin!=.
 * Panel flavour *********************************************
 
 * Transform into quarterly panel
-do  "./panel/quarterly_panel_U0.do"
+// do  "./panel/quarterly_panel_U0.do" /// with separate state for no benefits unemployment
+do  "./panel/quarterly_panel.do" // classic
 tab time state
 
 * Flows: uncomment for your correction flavour:

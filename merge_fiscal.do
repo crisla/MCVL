@@ -1,6 +1,6 @@
 // use "./MCVL0313.dta", clear
 global start_year = 2006
-global end_year = 2015
+global end_year = 2020
 
 * **************************************************************************** *
 * This file adds the wages.dta file, which is the sum of all tax files 	       *

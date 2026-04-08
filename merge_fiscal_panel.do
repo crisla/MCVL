@@ -1,7 +1,6 @@
-// use "./MCVL0313.dta", clear
 global start_year = 2006
 global prev_year = ${start_year}-1
-global end_year = 2015
+global end_year = 2020
 
 * **************************************************************************** *
 * This file adds the wages.dta file, which is the sum of all tax files 	       *
@@ -13,6 +12,8 @@ global end_year = 2015
 
 * PRELIMINARIES *********************************************
 
+* Load data
+// use "./MCVL0313.dta", clear
 * Panel adjustment *********************************************
 
 replace year = year(dtout) if year(dtout)<${start_year}
@@ -46,7 +47,7 @@ replace firmID = "0"+firmID if firm1==""|firm1==" "
 
 * MERGING  *********************************************
 
-merge m:m id firmID year using "./rawfiles/wages_panel.dta"
+merge m:1 id firmID year using "./rawfiles/wages_panel_${end_year}.dta"
 
 sort id year dtin
 
@@ -98,85 +99,85 @@ gen av_income_m = av_income*30 if income!=.
 // export delimited id firmID year state av_income_m days_firm days_c cop sevpay age if av_income!=.&av_income!=0&_merge!=2&dtout>td(01jan${start_year})&age>20&age<55 using "./sc/allwages.csv", replace
  
 *** Cleaning up ************************************************************
-
-* Here I drop the duplicate observations, so one spell=one observation.
-* I also preserve the first and last wages for robutness.
-
-* For panel: select starting from the first year (2005 in the first code version)
-gen beyond05 = 0
-replace beyond05 = 1 if year>=${start_year}
-
-* kepp the first and last wage
-sort id beyond05 jobcount year dtin
-by id beyond05 jobcount: gen start_inc = av_income[1]
-by id beyond05 jobcount: gen end_inc = av_income[_N]
-
-* Rename older variables
-rename av_income av_income_by_year
-rename av_income_m av_income_m_by_year
-
-*Calculate mean income
-egen av_income = mean(av_income_by_year) if beyond05==1, by(id beyond05 jobcount)
-egen av_income_m = mean(av_income_m_by_year) if beyond05==1, by(id beyond05 jobcount)
-replace av_income =. if  av_income ==0&state!="U"
-replace av_income_m =. if  av_income_m ==0&state!="U"
-
-*** For Panel: collapse into one spell-one observation *****************
-* Clean up starting dates
-sort id jobcount year dtin
-* First count temporayr and permanetn contracts as different spells (so not collapse into one)
-gen jc = 1
-by id: replace jc = 0 if state==state[_n-1]&jobcount==jobcount[_n-1]
-by id: replace jc = 0 if state==state[_n-1]&hidden_u==1
-by id: replace jobcount = sum(jc)
-drop jc 
-
-* Finally, collapse the panel
-sort id jobcount year dtin
-by id jobcount: replace dtin = dtin[1]
-by id jobcount: keep if _n==_N
-
-* Cleaning up days
-replace dtin = odtin if state=="R"&odtin<dtin
-replace days = dtout-dtin+1
-drop if days<0 // final clean of in-between spells. 1,246 in total
-
-
-*** Other adjustments ***************************************************
-
-* Adjustep income for part-time workers
-gen adjincome = av_income/cop
-gen adjincome_m = adjincome*30
-
-* Uncomment to make this the main variable
-replace av_income = adjincome
-replace av_income_m = adjincome_m
-drop adjincome adjincome_m
-
-* Future and past income - annual
-replace av_income = av_income*365
-sort id jobcount dtin
-by id: gen next_income = av_income[_n+1]
-by id: gen next2_income = av_income[_n+2]
-by id: gen past_income = av_income[_n-1]
-
-* Average observed income (in general)
-gen all_time_income = 0
-gen all_time_employed = 0
-replace all_time_income = av_income if (state=="T"|state=="P")&av_income!=.
-by id: replace all_time_income =sum(all_time_income)
-replace all_time_employed = days if (state=="T"|state=="P")&av_income!=.
-by id: replace all_time_employed =sum(all_time_employed)
-gen income_id = all_time_income/all_time_employed
-by id: replace income_id = income_id[_N]
-drop all_time_income  all_time_employed
-
-* Make sure non-registered unemployment spells get zero
-replace av_income = 0 if hidden_u==1
-
-gen year_in = year(dtin)
-gen year_out = year(dtout)
-* Uncomment to export a csv file with the resulting wages (for figures and tables)
-// export delimited id state jobcount av_income_m av_income days year_in year_out cop start_inc sevpay age if av_income!=.&av_income!=0&_merge!=2&age>20&age<55 using "./sc/wages.csv", replace
+//
+// * Here I drop the duplicate observations, so one spell=one observation.
+// * I also preserve the first and last wages for robutness.
+//
+// * For panel: select starting from the first year (2005 in the first code version)
+// gen beyond05 = 0
+// replace beyond05 = 1 if year>=${start_year}
+//
+// * kepp the first and last wage
+// sort id beyond05 jobcount year dtin
+// by id beyond05 jobcount: gen start_inc = av_income[1]
+// by id beyond05 jobcount: gen end_inc = av_income[_N]
+//
+// * Rename older variables
+// rename av_income av_income_by_year
+// rename av_income_m av_income_m_by_year
+//
+// *Calculate mean income
+// egen av_income = mean(av_income_by_year) if beyond05==1, by(id beyond05 jobcount)
+// egen av_income_m = mean(av_income_m_by_year) if beyond05==1, by(id beyond05 jobcount)
+// replace av_income =. if  av_income ==0&state!="U"
+// replace av_income_m =. if  av_income_m ==0&state!="U"
+//
+// *** For Panel: collapse into one spell-one observation *****************
+// * Clean up starting dates
+// sort id jobcount year dtin
+// * First count temporayr and permanetn contracts as different spells (so not collapse into one)
+// gen jc = 1
+// by id: replace jc = 0 if state==state[_n-1]&jobcount==jobcount[_n-1]
+// by id: replace jc = 0 if state==state[_n-1]&hidden_u==1
+// by id: replace jobcount = sum(jc)
+// drop jc 
+//
+// * Finally, collapse the panel
+// sort id jobcount year dtin
+// by id jobcount: replace dtin = dtin[1]
+// by id jobcount: keep if _n==_N
+//
+// * Cleaning up days
+// replace dtin = odtin if state=="R"&odtin<dtin
+// replace days = dtout-dtin+1
+// drop if days<0 // final clean of in-between spells. 1,246 in total
+//
+//
+// *** Other adjustments ***************************************************
+//
+// * Adjusted income for part-time workers
+// gen adjincome = av_income/cop
+// gen adjincome_m = adjincome*30
+//
+// * Uncomment to make this the main variable
+// replace av_income = adjincome
+// replace av_income_m = adjincome_m
+// drop adjincome adjincome_m
+//
+// * Future and past income - annual
+// replace av_income = av_income*365
+// sort id jobcount dtin
+// by id: gen next_income = av_income[_n+1]
+// by id: gen next2_income = av_income[_n+2]
+// by id: gen past_income = av_income[_n-1]
+//
+// * Average observed income (in general)
+// gen all_time_income = 0
+// gen all_time_employed = 0
+// replace all_time_income = av_income if (state=="T"|state=="P")&av_income!=.
+// by id: replace all_time_income =sum(all_time_income)
+// replace all_time_employed = days if (state=="T"|state=="P")&av_income!=.
+// by id: replace all_time_employed =sum(all_time_employed)
+// gen income_id = all_time_income/all_time_employed
+// by id: replace income_id = income_id[_N]
+// drop all_time_income  all_time_employed
+//
+// * Make sure non-registered unemployment spells get zero
+// replace av_income = 0 if hidden_u==1
+//
+// gen year_in = year(dtin)
+// gen year_out = year(dtout)
+// * Uncomment to export a csv file with the resulting wages (for figures and tables)
+// // export delimited id state jobcount av_income_m av_income days year_in year_out cop start_inc sevpay age if av_income!=.&av_income!=0&_merge!=2&age>20&age<55 using "./sc/wages.csv", replace
 
 saveold "./MCVL_wages_panel.dta", v(12) replace
