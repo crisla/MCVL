@@ -31,7 +31,7 @@ replace muni_name = "NA" if prov0==1
 * Some cleaning
 drop cpro_s _merge cmun dc prov0
 
-* S
+* Saving
 save ".\muni_mapper.dta", replace
 
 

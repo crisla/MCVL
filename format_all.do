@@ -10,6 +10,7 @@
 * Second, read and format afiliation files, depending on the flavour
 * -------------------------------------------------------------------------
 * Old style: 2006-2008
+* * * * * * * * * * * * * * 
 forvalues yy=2006/2008 {
 	local y =  substr("`yy'",3,4)
 	forvalues i=1/3{
@@ -46,6 +47,7 @@ forvalues yy=2006/2008 {
 }
 
 * New Style, 3 files: 2009-2012
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 forvalues yy=2009/2012 {
 	local y =  substr("`yy'",3,4)
 	forvalues i=1/3{
@@ -82,7 +84,8 @@ forvalues yy=2009/2012 {
 }
 
 * New Style, 4 files: 2013-2015
-forvalues yy=2021/2021 {
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * 
+forvalues yy=2013/2021 {
 	local y =  substr("`yy'",3,4)
 	forvalues i=1/4{
 		clear 
