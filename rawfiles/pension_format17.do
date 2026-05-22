@@ -30,24 +30,25 @@ rename v28 p_kind
 rename v29 p_coef
 rename v30 p_widow_orphan
 rename v31 p_other_pension
-rename v32 p_inc_extra
-rename v33 p_inc_inflation
-rename v34 p_income_y
-capture rename v35 p_year_brth_survivor
-capture rename v36 p_limit
-capture rename v37 p_max_coef
-capture rename v38 p_work_compatibility
-capture rename v39 p_dtlegal
-capture rename v40 p_years_contributed
-capture rename v41 p_contribution_period
-capture rename v42 p_share_contribution
-capture rename v43 p_maternity_extra
-capture rename v44 p_percentage_maternity_extra
-capture rename v45 p_coef_parcial
+capture rename v32 p_year_brth_survivor
+capture rename v33 p_limit
+capture rename v34 p_max_coef
+capture rename v35 p_work_compatibility
+capture rename v36 p_dtlegal
+capture rename v37 p_years_contributed
+capture rename v38 p_contribution_period
+capture rename v39 p_share_contribution
+capture rename v40 p_maternity_extra
+capture rename v41 p_percentage_maternity_extra
+capture rename v42 p_coef_parcial
+capture rename v43 p_maternity_sup_y
+capture rename v44 p_maternity_sup_coef
+capture rename v45 p_partial_coef
 
-gen p_maternity_sup_y = .
-gen p_maternity_sup_coef = .
-gen p_partial_coef = .
+gen p_inc_extra = .
+gen p_inc_inflation = .
+gen p_income_y = .
+order p_inc_extra p_inc_inflation p_income_y, after(p_other_pension)
 
 * Redefine income in euros (per month)
 replace p_inc_base = p_inc_base/100

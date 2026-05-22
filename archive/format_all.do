@@ -4,8 +4,75 @@
 
 * First, formal the personal file, containing all the demographic variables
 * -------------------------------------------------------------------------
-// quietly do "./format_all_personal.do"
-// quietly do "./format_all_pension.do"
+
+// capture confirm file "path/to/file.dta"
+//   if _rc != 0 {
+//       * File does NOT exist — run your formatting code here
+//       ...
+//       save "path/to/file.dta"
+//   }
+//   else {
+//       display "File already exists, skipping."
+//   }
+//
+//   capture confirm file tries to confirm the file exists. If it doesn't, Stata sets _rc to a non-zero return code
+//   (typically 601). If the file exists, _rc is 0.
+//
+//   For your loop structure in format_all.do, it would look like:
+//
+//   forvalues yy=2006/2008 {
+//       local y = substr("`yy'",3,4)
+//
+//       capture confirm file "./formatted/afilianon`y'.dta"
+//       if _rc != 0 {
+//           * File doesn't exist, format it
+//           forvalues i=1/3 {
+//               ...
+//           }
+//           save "./formatted/afilianon`y'.dta"
+//       }
+//   }
+
+* Old style: 2006-2008
+forvalues yy=2006/2008 {
+	local y =  substr("`yy'",3,4)
+	di `y'
+	clear
+	insheet using "./rawfiles/`yy'/PERSANON.trs", delimiter(";")
+	do "./rawfiles/personal_format.do"
+	save "./rawfiles/`yy'/personal`y'.dta", replace
+}
+
+* New style: 2009-
+forvalues yy=2009/$end_year {
+	local y =  substr("`yy'",3,4)
+	di `y'
+	clear
+	insheet using "./rawfiles/`yy'/MCVL`yy'PERSONAL_CDF.txt", delimiter(";")
+	do "./rawfiles/personal_format.do"
+	save "./rawfiles/`yy'/personal`y'.dta", replace
+}
+
+
+* FORMAT PENSION FILES * * * * * * * * * * * * * * * * * * * * * * * * * * 
+
+* Old style: 2006-2008
+forvalues yy=2006/2008 {
+	local y =  substr("`yy'",3,4)
+	clear
+	insheet using "./rawfiles/`yy'/PREANON.trs", delimiter(";")
+	quietly do "./rawfiles/pension_format.do"
+	save "./rawfiles/`yy'/pension`y'.dta", replace
+}
+
+* New style: 2009-
+forvalues yy=2009/$end_year {
+	local y =  substr("`yy'",3,4)
+	clear
+	insheet using "./rawfiles/`yy'/MCVL`yy'PRESTAC_CDF.txt", delimiter(";")
+	quietly do "./rawfiles/pension_format.do"
+	save "./rawfiles/`yy'/pension`y'.dta", replace
+}
 
 * Second, read and format afiliation files, depending on the flavour
 * -------------------------------------------------------------------------
@@ -83,7 +150,7 @@ forvalues yy=2009/2012 {
 	save "./rawfiles/afilianon`yy'.dta", replace
 }
 
-* New Style, 4 files: 2013-2015
+* New Style, 4 files: 2013-
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 forvalues yy=2013/2021 {
 	local y =  substr("`yy'",3,4)

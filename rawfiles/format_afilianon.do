@@ -18,6 +18,7 @@ rename v14 altfrst
 rename v15 tyrel
 rename v16 ett
 rename v17 tyemp
+capture tostring tyemp, replace
 rename v18 firm1
 rename v19 firm2
 rename v20 princ
@@ -30,6 +31,7 @@ rename v26 mod2ty
 rename v27 mod2coe
 rename v28 mod1tar
 rename v29 mod1cot
+capture destring mod1cot, replace
 
 capture confirm variable v30
 if !_rc {
