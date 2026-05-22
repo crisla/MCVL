@@ -22,32 +22,30 @@ rename v20 p_income_m
 rename v21 p_cause
 rename v22 p_dtsitu
 rename v23 p_region
-rename v24 p_people_cause
-rename v25 p_international_rate
-rename v26 p_divorce_rate
-rename v27 p_total_rate
-rename v28 p_kind
-rename v29 p_coef
-rename v30 p_widow_orphan
-rename v31 p_other_pension
-capture rename v32 p_year_brth_survivor
-capture rename v33 p_limit
-capture rename v34 p_max_coef
-capture rename v35 p_work_compatibility
-capture rename v36 p_dtlegal
-capture rename v37 p_years_contributed
-capture rename v38 p_contribution_period
-capture rename v39 p_share_contribution
-capture rename v40 p_maternity_extra
-capture rename v41 p_percentage_maternity_extra
-capture rename v42 p_coef_parcial
-capture rename v43 p_maternity_sup_y
-capture rename v44 p_maternity_sup_coef
-capture rename v45 p_partial_coef
+rename v24 p_international_rate
+rename v25 p_divorce_rate
+rename v26 p_total_rate
+rename v27 p_kind
+rename v28 p_coef
+rename v29 p_widow_orphan
+rename v30 p_other_pension
+rename v31 p_year_brth_survivor
+rename v32 p_limit
+rename v33 p_max_coef
+rename v34 p_work_compatibility
+rename v35 p_dtlegal
+rename v36 p_years_contributed
+rename v37 p_contribution_period
+rename v38 p_share_contribution
+rename v39 p_maternity_extra
+rename v40 p_percentage_maternity_extra
+rename v41 p_coef_parcial
 
+gen p_people_cause =. 
 gen p_inc_extra = .
 gen p_inc_inflation = .
 gen p_income_y = .
+order p_people_cause, after(p_region)
 order p_inc_extra p_inc_inflation p_income_y, after(p_other_pension)
 
 * Redefine income in euros (per month)
@@ -89,7 +87,7 @@ replace p_type = 3 if p_type==21
 replace p_type = 4 if p_type>=22&p_type<=24
 replace p_type = 5 if p_type==25
 
-label define pension_codes 1 "Disability" ///
+capture label define pension_codes 1 "Disability" ///
 2 "Parcial disability" ///
 3 "Retirement" ///
 4 "Early Retirement" ///

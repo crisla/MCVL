@@ -43,10 +43,7 @@ capture rename v41 p_contribution_period
 capture rename v42 p_share_contribution
 capture rename v43 p_maternity_extra
 capture rename v44 p_percentage_maternity_extra
-capture rename v45 p_coef_parcial
 
-gen p_maternity_sup_y = .
-gen p_maternity_sup_coef = .
 gen p_partial_coef = .
 
 * Redefine income in euros (per month)
@@ -88,7 +85,7 @@ replace p_type = 3 if p_type==21
 replace p_type = 4 if p_type>=22&p_type<=24
 replace p_type = 5 if p_type==25
 
-label define pension_codes 1 "Disability" ///
+capture label define pension_codes 1 "Disability" ///
 2 "Parcial disability" ///
 3 "Retirement" ///
 4 "Early Retirement" ///
