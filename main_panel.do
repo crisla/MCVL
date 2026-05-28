@@ -5,9 +5,9 @@
 
 * Please cahnge this code according to what you need.
 * First, year selection
-global start_year 2006                   // <- Change accordingly
+global start_year 2015                   // <- Change accordingly
 global start_year_next =${start_year}+1
-global end_year 2021                     // <- Change accordingly
+global end_year 2024                     // <- Change accordingly
 
 * Second, unemployment consolidation flavour (see manual)
 * Has to be: none, ltu, stu
@@ -76,7 +76,10 @@ replace state = "A" if regi>824&regi<840
 replace state = "R" if regi==140
 
 ** Industry harmonization **
-quietly do "./rawfiles/industry_clean_panel.do" 
+quietly do "./rawfiles/industry_clean_panel.do"
+
+sort id jobcount dtin dtout 
+
 by id: replace ind_short=ind_short[_n-1] if state=="U"
 
 * Age at the begining of the spell
@@ -84,9 +87,9 @@ by id: replace dtbirth = dtbirth[_n-1] if state=="R"
 gen age_in = year(dtin)-year(dtbirth)
 
 * Redefining unemployment for pensioneers
-replace dtout = dtin[_n+1] if state=="U"&state[_n+1]=="R"&dtout<dtin[_n+1]
-replace dtin = dtout[_n-1] if state=="R"&state[_n-1]=="U"&dtin<dtout[_n+1]
-replace days = dtout-dtin if state=="U"&state[_n+1]=="R"
+by id: replace dtout = dtin[_n+1] if state=="U"&state[_n+1]=="R"&dtout<dtin[_n+1]
+by id: replace dtin = dtout[_n-1] if state=="R"&state[_n-1]=="U"&dtin<dtout[_n-1]
+by id: replace days = dtout-dtin if state=="U"&state[_n+1]=="R"
 
 * Zombie workers
 sort id dtin dtout
@@ -125,7 +128,6 @@ order year state dtin dtout,after(jobcount)
 quietly do "./cma_panel.do"
 
 * Counting Spells *************************************************************
-order year state dtin dtout,after(jobcount)
 
 * Generating firm identifiers (recalls don't count as different jobs)
 tostring firm2, replace
@@ -234,74 +236,21 @@ gen old_obs = (year(dtout)<${year_0})
 
 * 3 Unemployment Expansions
 ******************************************************************************
-* Uncomment to select your option
+* Posibilities for unemployment extensions:
 
-// quietly do "./coru_none.do"		// Only registered
-// quietly do "./coru_ltu.do"		// Extended until next employment spell
-quietly do  "./coru_stu.do" // Same as ltu, plus all gaps between employment<15 days
+//  "./coru_none.do" // Only registered unemployment, joins consecutive spells.
+//  "./coru_ltu.do"	// Unfinished unemployment spells extended until end of sample (gaps less than 2 years)
+//  "./coru_stu.do" // Same as ltu, plus all qualifying gaps between employment (gaps less than 15 days)
+
+do "./coru_$xp.do"
 
 ******************************************************************************
 
-* 4 Making into a Panel
+* 4 Saving
 ******************************************************************************
 
-* If you don't want to panelize the data (as in the LFS) you can stop here
-* (this is the right thing to do if you want to link to tax files)
+* Congratulations! Your working history files are now nicely formatted into an annual panel.
+* Save before continuing.
 compress
-save "./MCVL${end_year}.dta", replace
+save "./MCVL_${end_year}.dta", replace
 
-* Otherwise: select start year
-global start_year = 2013
-global end_year = 2020
-
-drop if dtout<td(01jan${start_year})
-// replace year = ${start_year} if dtout<=td(31dec${start_year})&dtout!=.
-replace year = ${start_year} if dtin<td(01jan${start_year})&dtin!=.
-
-
-
-* Panel flavour *********************************************
-
-* Transform into quarterly panel
-// do  "./panel/quarterly_panel_U0.do" /// with separate state for no benefits unemployment
-do  "./panel/quarterly_panel.do" // classic
-tab time state
-
-* Flows: uncomment for your correction flavour:
-do "./panel/export_flows_stu_q.do"
-// do "./panel/export_flows_ltu_q.do"
-// do "./panel/export_flows_none_q.do"
-
-* Transform into monthly panel
-* WARNING: this requires more than 32GB of RAM! 
-* If you haven't saved, save now
-// saveold "./MCVL0313.dta", replace version(12)
-
-* Split the sample into 2 parts for smaller RAMs
-
-*Part1
-// drop if year>2007
-// drop if year<2004
-// quietly do  "./panel/monthly_panel_U0.do"
-// // tab time state
-//
-// * Flows: uncomment for your correction flavour:
-// do "./panel/export_flows_stu.do"
-// // do "./panel/export_flows_ltu.do"
-// // do "./panel/export_flows_none.do"
-//
-// saveold "./panel/flows_m00508.dta", replace version(12)
-//
-// * Part2
-// use "./MCVL0313.dta", clear
-// drop if year<2008
-//
-// * Flows: uncomment for your correction flavour:
-// do "./panel/export_flows_stu.do"
-// // do "./panel/export_flows_ltu.do"
-// // do "./panel/export_flows_none.do"
-//
-// saveold "./panel/flows_m00813.dta", replace version(12)
-
-**********************************************************************
-**********************************************************************
