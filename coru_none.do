@@ -19,9 +19,19 @@ by id year dupu_cut: replace dtout=dtout[_N] if state=="U"&dupu==1&dupu[_n+1]>1
 drop if dupu>1
 drop dupu dupu_cut
 
+* Filling in days between unemployment and retirement 
+* --------------------------------------
+* (up to 4 years = 1460 days, covers 90% of cases)
 sort id year jobcount dtin dtout
 
-* Reseat censored days
+gen flag_ret = (state=="U"&state[_n+1]=="R"&dtout<dtin[_n+1]&id==id[_n+1])
+gen days_diff = dtin[_n+1]-dtout if flag_ret
+by id: replace dtout = dtin[_n+1] if flag_ret==1&days_diff<1460
+* Clean-up
+drop flag_ret days_diff
+
+* Reset censored days
+sort id year jobcount dtin dtout
 replace cdtin = dtin
 replace cdtout = dtout
 format cdtin %td

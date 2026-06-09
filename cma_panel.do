@@ -87,7 +87,7 @@ by id jobcount: replace dtin = dtin[_n-1] if dtin[_n]<dtin[_n-1]&mod2dt!=.&dtin[
 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * 
 
 * Fixing days
-* 62 observations with negative days because of likely clerical errors to be removed
+* Observations with negative days because of likely clerical errors to be removed
 replace days = dtout-dtin
 drop if days<0
 

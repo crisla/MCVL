@@ -137,27 +137,27 @@ forvalues yy= $start_year / $end_year {
 // 	by id: replace year=year[_n-1] if year==.
 
 	save "./rawfiles/afilianon`yy'.dta", replace
-	 
+	
+	* Clean up
+	  if inrange(`yy', 2006, 2008) {
+			* 3 pieces
+			forvalues i=1/3{
+				erase "./rawfiles/`yy'/afilianon`y'`i'.dta"
+				}
+	  }
+		else{
+			forvalues i=1/4{
+				erase "./rawfiles/`yy'/afilianon`y'`i'.dta"
+			}
+		}
+		
+	display "Year `yy' Done."
+		
 	}
   
   else {
       display "Afiliation file for `yy' already exists, skipping."
   }
-  
-  * Clean up
-  if inrange(`yy', 2006, 2008) {
-	  	* 3 pieces
-		forvalues i=1/3{
-			erase "./rawfiles/`yy'/afilianon`y'`i'.dta"
-			}
-  }
-	else{
-		forvalues i=1/4{
-			erase "./rawfiles/`yy'/afilianon`y'`i'.dta"
-		}
-	}
-  
-  display "Year `yy' Done."
   
   // end of year loop
   

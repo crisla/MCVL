@@ -18,6 +18,7 @@ rename v14 altfrst
 rename v15 tyrel
 rename v16 ett
 rename v17 tyemp
+capture tostring tyemp, replace
 rename v18 firm1
 rename v19 firm2
 rename v20 princ
@@ -53,20 +54,7 @@ capture confirm variable v34
 if !_rc {
                       rename v34 pdtout
                }
-capture confirm variable v35
-if !_rc {
-                      rename v35 col_agreement1
-					  destring col_agreement1, replace
-               }
-capture confirm variable v36
-if !_rc {
-                      rename v36 col_agreement2
-					  destring col_agreement2, replace
-               }
-capture confirm variable v37
-if !_rc {
-                      rename v37 nwrks_main_firm
-               }
+
 
 *************************** 2.2 Reading dates ******************************
 
@@ -154,43 +142,22 @@ by id: replace inbetween = 2 if dtin[_n]>=dtin[_n-1]&dtout[_n]<=dtout[_n-1]&id[_
 
 * Drop full overlap spells.
 * I do not correct just now for minor overlaps 3 and 4, as I may be interested 
-* in recorded spell length by the admin - for exmple, in terms of job tenure.
-* I do record a varaible, multiemp, that quantifies how many other simultanaous
+* in recorded spell length by the admin - for example, in terms of job tenure.
+* I do record a variable, multiemp, that quantifies how many other simultanaous
 * spells did the worker had.
 * maqx_dtout: lastest end of spell date
 gen max_dtout = dtout
 by id: replace max_dtout = max_dtout[_n-1] if dtout[_n]<=max_dtout[_n-1]&dtin[_n]>=dtin[_n-1]
-* me: indicator for multuple employmetn spells
+* me: indicator for multiple employment spells
 gen me = 0
 by id: replace me = 1 if max_dtout == max_dtout[_n-1]
 * multi_emp: how many multiple jobs/spells a person had
 sort id max_dtout dtin
 by id max_dtout: gen multi_emp = sum(me)
-by id max_dtout: replace multi_emp = multi_emp[_N]
-
-* Record ERTEs
-by id max_dtout: gen ERTE = (me[_n+1]==1&tyrel[_n+1]==752&(state=="P"|state=="T"))
-by id max_dtout: replace ERTE=1 if tyrel==752&ERTE[_n-1]==1
-
-* For now, keep only if in 2020
-gen year_in = year(dtin)
-
-* Drop fully overlapping spells (save 2020 ERTEs)
-drop if me==1&(ERTE==0|(ERTE==1&year_in<2020))
-
-* Record end and start of ERTEs
-by id max_dtout: gen ERTE_in = dtin[_n+1] if (me[_n+1]==1&tyrel[_n+1]==752&(state=="P"|state=="T"))
-format ERTE_in %td
-by id max_dtout: gen ERTE_out = dtout[_N] if (me[_n+1]==1&tyrel[_n+1]==752&(state=="P"|state=="T"))
-format ERTE_out %td
-
-* Record number of days in ERTE (imperfect mesure, works for now)
-by id max_dtout: gen ERTE_days = sum(days) if ERTE==1
-by id max_dtout: replace ERTE_days = ERTE_days[_N]-ERTE_days
-
-* Clean up
+by id max_dtout: replace multi_emp = me[_N]
+* Drop fully overlapping spells
 drop if me==1
-drop max_dtout me year_in
+drop max_dtout me
 sort id dtin dtout
 
 * jobcount: number of jobs the worker had in the current year *

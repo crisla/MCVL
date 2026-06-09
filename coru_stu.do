@@ -19,9 +19,19 @@ by id year dupu_cut: replace dtout=dtout[_N] if state=="U"&dupu==1&dupu[_n+1]>1
 drop if dupu>1
 drop dupu dupu_cut
 
+* Filling in days between unemployment and retirement 
+* --------------------------------------
+* (up to 4 years = 1460 days, covers 90% of cases)
 sort id year jobcount dtin dtout
 
-* Reseat censored days
+gen flag_ret = (state=="U"&state[_n+1]=="R"&dtout<dtin[_n+1]&id==id[_n+1])
+gen days_diff = dtin[_n+1]-dtout if flag_ret
+by id: replace dtout = dtin[_n+1] if flag_ret==1&days_diff<1460
+* Clean-up
+drop flag_ret days_diff
+
+* Reset censored days
+sort id year jobcount dtin dtout
 replace cdtin = dtin
 replace cdtout = dtout
 format cdtin %td
@@ -101,9 +111,6 @@ by id: replace cdtout  = cdtin[_n+1] if state[_n]=="U"&state[_n+1]!="U"&state[_n
 * account unfinished spells as of the end of the sample.
 * (Except if the reason for the end of the spell is retirement or death)
 
-* Add a limit to the long-term spell 2 years missing
-global ylimit_ltu = 2
-
 * Mark cases
 by id: replace mod_u  = 1           if state[_n]=="U"&dtout<td(31dec${end_year})&last_spell==1&regular_dismissal==1&year(cdtout)>${start_year}&(${end_year}-year(dtout))<${ylimit_ltu}
 
@@ -115,15 +122,14 @@ by id: replace cdtout=td(31dec${end_year}) if state[_n]=="U"&dtout<td(31dec${end
 sort id year jobcount dtin dtout
 gen state2 = state
 
-* Adding missing days, all gaps greater than 15 days
-* ---------------------------------------------------
+* Adding missing days, all gaps greater than 15 days (or as defined in stu_min)
+* -----------------------------------------------------------------------------
 * Note: cause=94 marks discountinuous workes. The gap between jobs is voluntary.
-by id: replace state2="U" if state[_n]!="U"&state[_n+1]!="U"&state!="R"&state[_n+1]!="R"&diff_days>15&regular_dismissal==1
+by id: replace state2="U" if state[_n]!="U"&state[_n+1]!="U"&state!="R"&state[_n+1]!="R"&diff_days>${stu_min}&regular_dismissal==1
 
-* Adding employment spells that end before the end of the end year
-* ------------------------------------------------------------
-* approx. 60 % of the observations that would qualify are in 2013
-by id: replace state2="U" if last_spell==1&first_spell==0&unfinish==1&regular_dismissal==1&state!="R"&state!="U"&year(dtout)>2010
+* Adding employment spells that end before the end of the end year (whitin ltu limit)
+* ------------------------------------------------------------------------------------
+by id: replace state2="U" if last_spell==1&first_spell==0&unfinish==1&regular_dismissal==1&state!="R"&state!="U"&(${end_year}-year(dtout))<${ylimit_ltu}
 
 
 * hidden_u: a duplicate of the employment spell that presents a gap with the 

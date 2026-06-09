@@ -40,6 +40,26 @@ rename v38 p_share_contribution
 rename v39 p_maternity_extra
 rename v40 p_percentage_maternity_extra
 rename v41 p_coef_parcial
+capture confirm variable v42
+if !_rc {
+                      rename v42 p_gender_gap
+               }
+capture confirm variable v43
+if !_rc {
+                      rename v43 p_nchildren_gg
+               }
+capture confirm variable v44
+if !_rc {
+                      rename v44 p_special_extra
+               }
+capture confirm variable v45
+if !_rc {
+                      rename v45 p_special_pension
+               }
+capture confirm variable v46
+if !_rc {
+                      rename v46 p_special_collective
+               }
 
 gen p_people_cause =. 
 gen p_inc_extra = .

@@ -142,16 +142,16 @@ by id: replace inbetween = 2 if dtin[_n]>=dtin[_n-1]&dtout[_n]<=dtout[_n-1]&id[_
 
 * Drop full overlap spells.
 * I do not correct just now for minor overlaps 3 and 4, as I may be interested 
-* in recorded spell length by the admin - for exmple, in terms of job tenure.
-* I do record a varaible, multiemp, that quantifies how many other simultanaous
-* spells did the worker had.
-* maqx_dtout: lastest end of spell date
+* in recorded spell length by the admin - for example, in terms of job tenure.
+* I do record a variable, multiemp, that quantifies how many other simultanaous
+* spells the worker had.
+* max_dtout: lastest end of spell date
 gen max_dtout = dtout
 by id: replace max_dtout = max_dtout[_n-1] if dtout[_n]<=max_dtout[_n-1]&dtin[_n]>=dtin[_n-1]
 * me: indicator for multiple employment spells
 gen me = 0
 by id: replace me = 1 if max_dtout == max_dtout[_n-1]
-* multi_emp: how many multiple jobs/spells a person had
+* multi_emp: how many multiple jobs/spells a person has
 sort id max_dtout dtin
 by id max_dtout: gen multi_emp = sum(me)
 by id max_dtout: replace multi_emp = me[_N]

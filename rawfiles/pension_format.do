@@ -80,15 +80,17 @@ sort id
 
 * Simplify pension formats
 replace p_type = 1 if p_type==1|p_type==2|p_type==4|(p_type>=10&p_type<=12)|p_type==14
-replace p_type = 2 if p_type==3|p_type==13|p_type==18
+replace p_type = 2 if p_type==3|p_type==13|p_type==18|p_type==15
 replace p_type = 3 if p_type==21
 replace p_type = 4 if p_type>=22&p_type<=24
-replace p_type = 5 if p_type==25
+replace p_type = 5 if p_type==25|p_type==26
+replace p_type = 6 if p_type==16|p_type==17
 
 capture label define pension_codes 1 "Disability" ///
 2 "Parcial disability" ///
 3 "Retirement" ///
 4 "Early Retirement" ///
 5 "Parcial Retirement" ///
+6 "Temporary retirement"
 
 label values p_type pension_codes
