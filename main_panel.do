@@ -1,5 +1,5 @@
 ******************************************************************************
-* PATCHWORK FILE
+* PATCHWORK FILE - FORMAT FILE FOR WORKING HISTORIES
 ******************************************************************************
 * 0. Define globals and options
 
@@ -105,7 +105,7 @@ compress
 save "./Patchwork_baseline.dta", replace 
 
 
-* 2 Other adjustments
+* 3 Other adjustments
 ******************************************************************************
 
 ** Autonomous adjustment **
